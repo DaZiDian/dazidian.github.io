@@ -15,6 +15,11 @@
           <p class="text-tokyo-night-fg-dark italic mb-4">
             —— 春風若有憐花意，可否許我再少年？
           </p>
+          <p class="text-tokyo-night-fg-dark italic mb-4">
+            友情链接
+            https://5ime.cn
+            https://taoi.dpdns.org
+          </p>
           <!-- 严禁修改: 版权信息 -->
           <p class="text-sm text-tokyo-night-dark5">
             DaZiDian & DSMCC ©2007-present All Copyrights Reserved.
