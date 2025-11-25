@@ -46,11 +46,12 @@ body {
   background: rgba(0, 0, 0, 0.5);
 }
 
-/* Markdown 代码块样式 */
+/* Markdown 代码块样式 - 黑色背景 */
 .prose pre {
   @apply rounded-lg p-4 overflow-x-auto my-4;
   background-color: #0d1117 !important;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #c9d1d9;
 }
 
 .prose pre code {
@@ -59,10 +60,12 @@ body {
   line-height: 1.6;
   color: inherit;
   display: block;
+  font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
 }
 
 .prose code.hljs {
   @apply bg-transparent;
+  background: transparent !important;
 }
 
 /* 行内代码样式 */
@@ -71,18 +74,21 @@ body {
   background-color: rgba(110, 118, 129, 0.4);
   font-size: 0.875em;
   color: inherit;
+  font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
 }
 
 /* 暗色模式下的代码块 */
 .dark .prose pre {
   background-color: #0d1117 !important;
   border-color: rgba(255, 255, 255, 0.1);
+  color: #c9d1d9;
 }
 
 /* 亮色模式下的代码块 */
 .light .prose pre {
-  background-color: #f6f8fa !important;
-  border-color: rgba(0, 0, 0, 0.1);
+  background-color: #0d1117 !important; /* 代码块统一使用黑色背景 */
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #c9d1d9;
 }
 
 .light .prose :not(pre) > code {
