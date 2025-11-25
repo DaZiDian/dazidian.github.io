@@ -23,18 +23,26 @@ function escapeHtml(text) {
 // 配置 marked 的代码高亮
 marked.setOptions({
   highlight: function(code, lang) {
+    if (!code) return ''
+    
+    // 确保 code 是字符串
+    code = String(code)
+    
     if (lang && hljs.getLanguage(lang)) {
       try {
         const highlighted = hljs.highlight(code, { language: lang })
-        return highlighted.value
+        // 确保返回字符串
+        return highlighted.value || escapeHtml(code)
       } catch (err) {
         console.warn('代码高亮失败:', err)
+        // 高亮失败时返回转义后的代码
+        return escapeHtml(code)
       }
     }
     // 如果没有指定语言或语言不支持，尝试自动检测
     try {
       const highlighted = hljs.highlightAuto(code)
-      return highlighted.value
+      return highlighted.value || escapeHtml(code)
     } catch (err) {
       // 如果自动检测也失败，返回转义后的代码
       return escapeHtml(code)
@@ -50,6 +58,11 @@ marked.use({
     code(code, infostring, escaped) {
       const lang = (infostring || '').trim() || ''
       
+      // 确保 code 是字符串
+      if (typeof code !== 'string') {
+        code = String(code)
+      }
+      
       // 如果代码已经被高亮处理过（escaped = true），直接使用
       // 否则需要转义 HTML 标签
       if (!escaped) {
@@ -63,6 +76,10 @@ marked.use({
     },
     // 行内代码
     codespan(code) {
+      // 确保 code 是字符串
+      if (typeof code !== 'string') {
+        code = String(code)
+      }
       return `<code class="hljs">${escapeHtml(code)}</code>`
     }
   }
