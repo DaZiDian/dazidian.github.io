@@ -70,11 +70,21 @@ marked.use({
       const codeStr = escapeHtml(String(code || ''))
       return `<code class="hljs">${codeStr}</code>`
     },
-    // 段落渲染 - 转义段落中的 HTML 标签
+    // 段落渲染 - 转义段落中的原始 HTML 标签（但保留已转换的 Markdown 元素）
     paragraph(text) {
-      // 转义 HTML 标签，使其显示为文本
-      const escapedText = escapeHtml(text)
-      return `<p>${escapedText}</p>\n`
+      // text 可能包含已转换的 Markdown 元素（如链接、图片等）
+      // 我们需要转义原始的 HTML 标签，但保留已转换的 HTML
+      // 使用正则匹配并转义未转义的 HTML 标签
+      const escapedText = text.replace(/<(?![a-z]+\s|[/!])/gi, '&lt;').replace(/(?<![a-z"'])>/gi, '&gt;')
+      // 但上面的方法可能不够精确，让我们使用更安全的方法：
+      // 只转义明显的 HTML 标签（如 <script>, <div> 等），但保留已转换的 Markdown HTML
+      // 实际上，marked 已经处理了 Markdown 语法，text 中的 HTML 标签应该是用户输入的原始 HTML
+      // 为了安全，我们转义所有看起来像 HTML 标签的内容（除了已转换的 Markdown 元素）
+      const safeText = text.replace(/(<)(?!\/?(?:a|img|strong|em|code|pre|br|hr|blockquote|ul|ol|li|h[1-6]|p)\b)[^>]*(>)/gi, (match) => {
+        // 转义非 Markdown 转换的 HTML 标签
+        return escapeHtml(match)
+      })
+      return `<p>${safeText}</p>\n`
     },
     // HTML 块渲染 - 转义 HTML 标签以显示为文本
     html(html) {
