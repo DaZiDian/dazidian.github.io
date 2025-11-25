@@ -219,6 +219,7 @@
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
 import { useTheme } from '../composables/useTheme'
+import { renderMarkdown } from '../utils/markdown'
 
 const { isDark } = useTheme()
 
@@ -278,26 +279,12 @@ watch(() => formData.title, (newTitle) => {
   }
 })
 
-// Markdown 预览 (简化版本，实际项目建议使用 marked 等库)
+// Markdown 预览
 const markdownPreview = computed(() => {
-  let html = formData.content
-    // 标题
-    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-    // 粗体和斜体
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    // 代码
-    .replace(/`(.+?)`/g, '<code>$1</code>')
-    // 链接
-    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank">$1</a>')
-    // 图片
-    .replace(/!\[(.+?)\]\((.+?)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto;">')
-    // 换行
-    .replace(/\n/g, '<br>')
-  
-  return html || '<p class="text-gray-500">开始输入内容以查看预览...</p>'
+  if (!formData.content.trim()) {
+    return '<p class="text-gray-500">开始输入内容以查看预览...</p>'
+  }
+  return renderMarkdown(formData.content)
 })
 
 // 插入 Markdown 语法
@@ -457,5 +444,46 @@ const savePost = (status) => {
 .prose img {
   border-radius: 0.5rem;
   margin: 1rem 0;
+}
+
+/* 代码块样式 */
+.prose pre {
+  @apply rounded-lg p-4 overflow-x-auto my-4;
+  background-color: #0d1117 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.prose pre code {
+  @apply p-0 bg-transparent;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: inherit;
+}
+
+.prose code.hljs {
+  @apply bg-transparent;
+}
+
+/* 行内代码样式 */
+.prose :not(pre) > code {
+  @apply px-1.5 py-0.5 rounded;
+  background-color: rgba(110, 118, 129, 0.4);
+  font-size: 0.875em;
+}
+
+/* 暗色模式下的代码块 */
+.dark .prose pre {
+  background-color: #0d1117 !important;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 亮色模式下的代码块 */
+.light .prose pre {
+  background-color: #f6f8fa !important;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.light .prose :not(pre) > code {
+  background-color: rgba(175, 184, 193, 0.2);
 }
 </style>

@@ -111,6 +111,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useScrollAnimation } from '../composables/useScrollAnimation'
 import { useTheme } from '../composables/useTheme'
 import axios from 'axios'
+import { renderMarkdown } from '../utils/markdown'
 
 useScrollAnimation()
 const { isDark } = useTheme()
@@ -154,42 +155,6 @@ const collapseArticle = (articleId) => {
   expandedArticles.value[articleId] = false
 }
 
-// 简单的Markdown渲染函数
-const renderMarkdown = (content) => {
-  if (!content) return ''
-  
-  let html = content
-    // 标题
-    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-    // 粗体和斜体
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    // 代码块
-    .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
-    // 行内代码
-    .replace(/`(.+?)`/g, '<code>$1</code>')
-    // 链接
-    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">$1</a>')
-    // 图片
-    .replace(/!\[(.+?)\]\((.+?)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto; border-radius: 8px; margin: 1rem 0;">')
-    // 列表
-    .replace(/^\- (.+)$/gim, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
-    // 引用
-    .replace(/^> (.+)$/gim, '<blockquote>$1</blockquote>')
-    // 换行
-    .replace(/\n\n/g, '</p><p>')
-    .replace(/\n/g, '<br>')
-  
-  // 包装段落
-  if (!html.startsWith('<h') && !html.startsWith('<ul') && !html.startsWith('<pre') && !html.startsWith('<blockquote')) {
-    html = '<p>' + html + '</p>'
-  }
-  
-  return html
-}
 
 // 从API加载文章
 const fetchArticles = async () => {

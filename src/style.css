@@ -46,6 +46,49 @@ body {
   background: rgba(0, 0, 0, 0.5);
 }
 
+/* Markdown 代码块样式 */
+.prose pre {
+  @apply rounded-lg p-4 overflow-x-auto my-4;
+  background-color: #0d1117 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.prose pre code {
+  @apply p-0 bg-transparent;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: inherit;
+  display: block;
+}
+
+.prose code.hljs {
+  @apply bg-transparent;
+}
+
+/* 行内代码样式 */
+.prose :not(pre) > code {
+  @apply px-1.5 py-0.5 rounded;
+  background-color: rgba(110, 118, 129, 0.4);
+  font-size: 0.875em;
+  color: inherit;
+}
+
+/* 暗色模式下的代码块 */
+.dark .prose pre {
+  background-color: #0d1117 !important;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 亮色模式下的代码块 */
+.light .prose pre {
+  background-color: #f6f8fa !important;
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.light .prose :not(pre) > code {
+  background-color: rgba(175, 184, 193, 0.2);
+}
+
 /* Tokyo Night 配色主题 */
 :root {
   --tokyo-night-bg: #1a1b26;
