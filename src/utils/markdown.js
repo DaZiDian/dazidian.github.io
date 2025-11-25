@@ -20,48 +20,39 @@ function escapeHtml(text) {
   return String(text).replace(/[&<>"']/g, m => map[m])
 }
 
-/**
- * 安全地获取高亮后的代码字符串
- * @param {string} code - 原始代码
- * @param {string} lang - 语言类型
- * @returns {string} 高亮后的 HTML 字符串
- */
-function getHighlightedCode(code, lang) {
-  if (!code) return ''
-  
-  const codeStr = String(code)
-  
-  try {
-    let result
-    if (lang && hljs.getLanguage(lang)) {
-      result = hljs.highlight(codeStr, { language: lang })
-    } else {
-      result = hljs.highlightAuto(codeStr)
-    }
-    
-    // highlight.js 返回的对象结构：{ value: string, language: string, ... }
-    // 确保 value 存在且是字符串
-    if (result && result.value) {
-      const value = result.value
-      // 确保返回的是字符串
-      if (typeof value === 'string') {
-        return value
-      }
-      // 如果不是字符串，尝试转换
-      return String(value)
-    }
-    
-    // 如果 result 没有 value，返回转义后的代码
-    return escapeHtml(codeStr)
-  } catch (err) {
-    console.warn('代码高亮失败:', err)
-    // 高亮失败，返回转义后的代码
-    return escapeHtml(codeStr)
-  }
-}
-
-// 配置 marked 的基本选项
+// 配置 marked，使用标准的 highlight 选项
 marked.setOptions({
+  highlight: function(code, lang) {
+    // 确保 code 是字符串
+    const codeStr = String(code || '')
+    
+    // 如果指定了语言且 highlight.js 支持
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        const result = hljs.highlight(codeStr, { language: lang })
+        // highlight.js 返回 { value: string, language: string, ... }
+        // value 是已经高亮后的 HTML 字符串
+        return result.value || escapeHtml(codeStr)
+      } catch (err) {
+        console.warn('代码高亮失败:', err)
+        return escapeHtml(codeStr)
+      }
+    }
+    
+    // 如果没有指定语言或语言不支持，尝试自动检测
+    if (codeStr.trim()) {
+      try {
+        const result = hljs.highlightAuto(codeStr)
+        return result.value || escapeHtml(codeStr)
+      } catch (err) {
+        return escapeHtml(codeStr)
+      }
+    }
+    
+    // 空代码，返回转义后的代码
+    return escapeHtml(codeStr)
+  },
+  langPrefix: 'hljs language-', // 为代码块添加类名前缀
   breaks: true, // 支持 GitHub 风格的换行
   gfm: true // 支持 GitHub 风格的 Markdown
 })
@@ -69,22 +60,24 @@ marked.setOptions({
 // 自定义渲染器
 marked.use({
   renderer: {
-    // 代码块渲染
+    // 代码块渲染 - marked 已经通过 highlight 选项处理了高亮
     code(code, infostring, escaped) {
       const lang = (infostring || '').trim() || ''
-      const codeStr = String(code || '')
       
-      // 获取高亮后的代码（已经是 HTML 格式）
-      const highlightedCode = getHighlightedCode(codeStr, lang)
+      // code 参数已经是高亮后的 HTML 字符串（由 highlight 选项处理）
+      // escaped 参数表示代码是否已经被转义/高亮
+      let codeStr = String(code || '')
       
-      // 确保 highlightedCode 是字符串
-      const safeCode = String(highlightedCode || escapeHtml(codeStr))
+      // 如果没有被高亮（escaped = false），转义 HTML
+      if (!escaped) {
+        codeStr = escapeHtml(codeStr)
+      }
       
       // 添加语言类名
       const langClass = lang ? ` language-${escapeHtml(lang)}` : ''
       
       // 返回代码块 HTML（黑色背景由 CSS 控制）
-      return `<pre><code class="hljs${langClass}">${safeCode}</code></pre>\n`
+      return `<pre><code class="hljs${langClass}">${codeStr}</code></pre>\n`
     },
     // 行内代码
     codespan(code) {
@@ -97,10 +90,15 @@ marked.use({
       
       // 如果包含 HTML 标签，将其作为 HTML 代码块显示
       if (htmlStr && htmlStr.match(/<[^>]+>/)) {
-        // 获取高亮后的 HTML 代码
-        const highlightedCode = getHighlightedCode(htmlStr, 'html')
-        const safeCode = String(highlightedCode || escapeHtml(htmlStr))
-        return `<pre><code class="hljs language-html">${safeCode}</code></pre>\n`
+        try {
+          // 使用 highlight.js 高亮 HTML 代码
+          const result = hljs.highlight(htmlStr, { language: 'html' })
+          const highlightedCode = result.value || escapeHtml(htmlStr)
+          return `<pre><code class="hljs language-html">${highlightedCode}</code></pre>\n`
+        } catch (err) {
+          // 高亮失败，转义后显示
+          return `<pre><code class="hljs language-html">${escapeHtml(htmlStr)}</code></pre>\n`
+        }
       }
       
       // 如果不是 HTML 标签，转义显示
