@@ -23,9 +23,7 @@ function escapeHtml(text) {
 // 配置 marked 的基本选项
 marked.setOptions({
   breaks: true, // 支持 GitHub 风格的换行
-  gfm: true, // 支持 GitHub 风格的 Markdown
-  sanitize: false, // 不自动转义 HTML（我们手动处理）
-  silent: false
+  gfm: true // 支持 GitHub 风格的 Markdown
 })
 
 // 自定义渲染器
@@ -70,25 +68,25 @@ marked.use({
       const codeStr = escapeHtml(String(code || ''))
       return `<code class="hljs">${codeStr}</code>`
     },
-    // 段落渲染 - 转义段落中的原始 HTML 标签（但保留已转换的 Markdown 元素）
-    paragraph(text) {
-      // text 可能包含已转换的 Markdown 元素（如链接、图片等）
-      // 我们需要转义原始的 HTML 标签，但保留已转换的 HTML
-      // 使用正则匹配并转义未转义的 HTML 标签
-      const escapedText = text.replace(/<(?![a-z]+\s|[/!])/gi, '&lt;').replace(/(?<![a-z"'])>/gi, '&gt;')
-      // 但上面的方法可能不够精确，让我们使用更安全的方法：
-      // 只转义明显的 HTML 标签（如 <script>, <div> 等），但保留已转换的 Markdown HTML
-      // 实际上，marked 已经处理了 Markdown 语法，text 中的 HTML 标签应该是用户输入的原始 HTML
-      // 为了安全，我们转义所有看起来像 HTML 标签的内容（除了已转换的 Markdown 元素）
-      const safeText = text.replace(/(<)(?!\/?(?:a|img|strong|em|code|pre|br|hr|blockquote|ul|ol|li|h[1-6]|p)\b)[^>]*(>)/gi, (match) => {
-        // 转义非 Markdown 转换的 HTML 标签
-        return escapeHtml(match)
-      })
-      return `<p>${safeText}</p>\n`
-    },
-    // HTML 块渲染 - 转义 HTML 标签以显示为文本
+    // HTML 块渲染 - 将 HTML 标签转换为代码块显示（类似 Typora）
     html(html) {
-      return escapeHtml(html)
+      const htmlStr = String(html || '').trim()
+      
+      // 如果包含 HTML 标签，将其作为 HTML 代码块显示
+      if (htmlStr.match(/<[^>]+>/)) {
+        try {
+          // 尝试进行 HTML 语法高亮
+          const highlighted = hljs.highlight(htmlStr, { language: 'html' })
+          const highlightedCode = highlighted.value || escapeHtml(htmlStr)
+          return `<pre><code class="hljs language-html">${highlightedCode}</code></pre>\n`
+        } catch (err) {
+          // 高亮失败，转义后显示
+          return `<pre><code class="hljs language-html">${escapeHtml(htmlStr)}</code></pre>\n`
+        }
+      }
+      
+      // 如果不是 HTML 标签，转义显示
+      return escapeHtml(htmlStr)
     }
   }
 })
