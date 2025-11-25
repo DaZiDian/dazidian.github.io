@@ -9,7 +9,7 @@ import 'highlight.js/styles/github-dark.css'
  * @returns {string} 转义后的文本
  */
 function escapeHtml(text) {
-  if (!text) return ''
+  if (text == null) return ''
   const map = {
     '&': '&amp;',
     '<': '&lt;',
@@ -20,67 +20,65 @@ function escapeHtml(text) {
   return String(text).replace(/[&<>"']/g, m => map[m])
 }
 
-// 配置 marked 的代码高亮
+// 配置 marked 的基本选项
 marked.setOptions({
-  highlight: function(code, lang) {
-    if (!code) return ''
-    
-    // 确保 code 是字符串
-    code = String(code)
-    
-    if (lang && hljs.getLanguage(lang)) {
-      try {
-        const highlighted = hljs.highlight(code, { language: lang })
-        // 确保返回字符串
-        return highlighted.value || escapeHtml(code)
-      } catch (err) {
-        console.warn('代码高亮失败:', err)
-        // 高亮失败时返回转义后的代码
-        return escapeHtml(code)
-      }
-    }
-    // 如果没有指定语言或语言不支持，尝试自动检测
-    try {
-      const highlighted = hljs.highlightAuto(code)
-      return highlighted.value || escapeHtml(code)
-    } catch (err) {
-      // 如果自动检测也失败，返回转义后的代码
-      return escapeHtml(code)
-    }
-  },
   breaks: true, // 支持 GitHub 风格的换行
-  gfm: true // 支持 GitHub 风格的 Markdown
+  gfm: true, // 支持 GitHub 风格的 Markdown
+  sanitize: false, // 不自动转义 HTML（我们手动处理）
+  silent: false
 })
 
-// 自定义代码块渲染器，确保 HTML 标签被正确转义
+// 自定义渲染器
 marked.use({
   renderer: {
+    // 代码块渲染
     code(code, infostring, escaped) {
       const lang = (infostring || '').trim() || ''
       
       // 确保 code 是字符串
-      if (typeof code !== 'string') {
-        code = String(code)
-      }
+      let codeStr = String(code || '')
       
-      // 如果代码已经被高亮处理过（escaped = true），直接使用
-      // 否则需要转义 HTML 标签
-      if (!escaped) {
-        code = escapeHtml(code)
+      // 手动进行语法高亮（不使用 marked 的 highlight 选项，避免冲突）
+      if (lang && hljs.getLanguage(lang)) {
+        try {
+          const highlighted = hljs.highlight(codeStr, { language: lang })
+          codeStr = highlighted.value || escapeHtml(codeStr)
+        } catch (err) {
+          console.warn('代码高亮失败:', err)
+          codeStr = escapeHtml(codeStr)
+        }
+      } else if (codeStr.trim()) {
+        // 没有指定语言，尝试自动检测
+        try {
+          const highlighted = hljs.highlightAuto(codeStr)
+          codeStr = highlighted.value || escapeHtml(codeStr)
+        } catch (err) {
+          codeStr = escapeHtml(codeStr)
+        }
+      } else {
+        // 空代码，转义 HTML 标签
+        codeStr = escapeHtml(codeStr)
       }
       
       // 添加语言类名
       const langClass = lang ? ` language-${escapeHtml(lang)}` : ''
       
-      return `<pre><code class="hljs${langClass}">${code}</code></pre>\n`
+      return `<pre><code class="hljs${langClass}">${codeStr}</code></pre>\n`
     },
     // 行内代码
     codespan(code) {
-      // 确保 code 是字符串
-      if (typeof code !== 'string') {
-        code = String(code)
-      }
-      return `<code class="hljs">${escapeHtml(code)}</code>`
+      const codeStr = escapeHtml(String(code || ''))
+      return `<code class="hljs">${codeStr}</code>`
+    },
+    // 段落渲染 - 转义段落中的 HTML 标签
+    paragraph(text) {
+      // 转义 HTML 标签，使其显示为文本
+      const escapedText = escapeHtml(text)
+      return `<p>${escapedText}</p>\n`
+    },
+    // HTML 块渲染 - 转义 HTML 标签以显示为文本
+    html(html) {
+      return escapeHtml(html)
     }
   }
 })
@@ -95,6 +93,7 @@ export function renderMarkdown(markdown) {
   
   try {
     // 使用 marked 渲染 Markdown
+    // 段落和 HTML 标签会在 renderer 中被转义
     const html = marked.parse(markdown)
     return html
   } catch (error) {
