@@ -40,7 +40,13 @@ marked.use({
       if (lang && hljs.getLanguage(lang)) {
         try {
           const highlighted = hljs.highlight(codeStr, { language: lang })
-          codeStr = highlighted.value || escapeHtml(codeStr)
+          // 确保 highlighted.value 是字符串
+          if (highlighted && highlighted.value && typeof highlighted.value === 'string') {
+            codeStr = highlighted.value
+          } else {
+            // 如果 value 不是字符串，转义原始代码
+            codeStr = escapeHtml(codeStr)
+          }
         } catch (err) {
           console.warn('代码高亮失败:', err)
           codeStr = escapeHtml(codeStr)
@@ -49,7 +55,13 @@ marked.use({
         // 没有指定语言，尝试自动检测
         try {
           const highlighted = hljs.highlightAuto(codeStr)
-          codeStr = highlighted.value || escapeHtml(codeStr)
+          // 确保 highlighted.value 是字符串
+          if (highlighted && highlighted.value && typeof highlighted.value === 'string') {
+            codeStr = highlighted.value
+          } else {
+            // 如果 value 不是字符串，转义原始代码
+            codeStr = escapeHtml(codeStr)
+          }
         } catch (err) {
           codeStr = escapeHtml(codeStr)
         }
@@ -57,6 +69,9 @@ marked.use({
         // 空代码，转义 HTML 标签
         codeStr = escapeHtml(codeStr)
       }
+      
+      // 最终确保 codeStr 是字符串
+      codeStr = String(codeStr || '')
       
       // 添加语言类名
       const langClass = lang ? ` language-${escapeHtml(lang)}` : ''
@@ -77,7 +92,13 @@ marked.use({
         try {
           // 尝试进行 HTML 语法高亮
           const highlighted = hljs.highlight(htmlStr, { language: 'html' })
-          const highlightedCode = highlighted.value || escapeHtml(htmlStr)
+          // 确保 highlighted.value 是字符串
+          let highlightedCode = ''
+          if (highlighted && highlighted.value && typeof highlighted.value === 'string') {
+            highlightedCode = highlighted.value
+          } else {
+            highlightedCode = escapeHtml(htmlStr)
+          }
           return `<pre><code class="hljs language-html">${highlightedCode}</code></pre>\n`
         } catch (err) {
           // 高亮失败，转义后显示
