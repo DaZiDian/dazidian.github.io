@@ -430,6 +430,7 @@ onMounted(() => {
   @apply flex relative;
   max-height: 600px;
   overflow: auto;
+  align-items: flex-start;
 }
 
 .code-block-line-numbers {
@@ -441,15 +442,19 @@ onMounted(() => {
   line-height: 1.6;
   padding-top: 1rem;
   padding-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 .code-block-line-numbers .line-number {
   @apply text-xs;
   font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
   line-height: 1.6;
-  min-height: 1.6em;
+  height: 1.6em;
   display: block;
   text-align: right;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .code-block-line-numbers .line-number.dark {
@@ -464,6 +469,7 @@ onMounted(() => {
   @apply flex-1 overflow-auto;
   padding-top: 1rem;
   padding-bottom: 1rem;
+  margin: 0;
 }
 
 .code-block-pre {
@@ -476,21 +482,34 @@ onMounted(() => {
   padding: 0;
   padding-left: 1rem;
   padding-right: 1rem;
+  margin: 0;
+  border: none;
+  border-radius: 0;
 }
 
 .code-block-pre code {
   @apply block;
   background-color: transparent !important;
   padding: 0;
+  margin: 0;
   font-size: inherit;
   line-height: 1.6 !important;
   color: inherit;
+  border: none;
+  border-radius: 0;
 }
 
 /* 确保代码正常显示 */
 .code-block-pre code :deep(*) {
   display: inline;
   line-height: 1.6 !important;
+  margin: 0;
+  padding: 0;
+}
+
+/* 确保代码行与行号对齐 */
+.code-block-pre code :deep(br) {
+  line-height: 1.6;
 }
 
 /* 自定义滚动条 */
