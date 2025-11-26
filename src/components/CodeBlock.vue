@@ -431,6 +431,7 @@ onMounted(() => {
   max-height: 600px;
   overflow: auto;
   align-items: flex-start;
+  padding-top: 1rem;
 }
 
 .code-block-line-numbers {
@@ -440,7 +441,7 @@ onMounted(() => {
   min-width: 50px;
   user-select: none;
   line-height: 1.6;
-  padding-top: 1rem;
+  padding-top: 0;
   padding-bottom: 1rem;
   flex-shrink: 0;
 }
@@ -455,6 +456,7 @@ onMounted(() => {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  vertical-align: top;
 }
 
 .code-block-line-numbers .line-number.dark {
@@ -467,7 +469,7 @@ onMounted(() => {
 
 .code-block-code-wrapper {
   @apply flex-1 overflow-auto;
-  padding-top: 1rem;
+  padding-top: 0;
   padding-bottom: 1rem;
   margin: 0;
 }
@@ -485,6 +487,7 @@ onMounted(() => {
   margin: 0;
   border: none;
   border-radius: 0;
+  padding-top: 0;
 }
 
 .code-block-pre code {
