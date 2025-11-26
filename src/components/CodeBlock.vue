@@ -433,22 +433,23 @@ onMounted(() => {
 }
 
 .code-block-line-numbers {
-  @apply flex flex-col px-4 py-3 text-right select-none;
+  @apply flex flex-col px-4 text-right select-none;
   background-color: rgba(13, 17, 23, 0.5);
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   min-width: 50px;
   user-select: none;
   line-height: 1.6;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .code-block-line-numbers .line-number {
   @apply text-xs;
   font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
   line-height: 1.6;
-  height: 1.6em;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  min-height: 1.6em;
+  display: block;
+  text-align: right;
 }
 
 .code-block-line-numbers .line-number.dark {
@@ -464,12 +465,14 @@ onMounted(() => {
 }
 
 .code-block-pre {
-  @apply m-0 p-4;
+  @apply m-0;
   background-color: transparent;
   font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
   font-size: 0.875rem;
   line-height: 1.6;
   color: #c9d1d9;
+  padding: 1rem;
+  padding-left: 0;
 }
 
 .code-block-pre code {
