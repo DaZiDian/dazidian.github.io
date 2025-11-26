@@ -47,14 +47,15 @@ body {
 }
 
 /* Markdown 代码块样式 - 黑色背景 */
-.prose pre {
+/* 注意：代码块现在由 CodeBlock 组件处理，这些样式用于向后兼容 */
+.prose pre:not([data-code-block]) {
   @apply rounded-lg p-4 overflow-x-auto my-4;
   background-color: #0d1117 !important;
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: #c9d1d9;
 }
 
-.prose pre code {
+.prose pre:not([data-code-block]) code {
   @apply p-0 bg-transparent;
   font-size: 0.875rem;
   line-height: 1.6;
@@ -78,14 +79,14 @@ body {
 }
 
 /* 暗色模式下的代码块 */
-.dark .prose pre {
+.dark .prose pre:not([data-code-block]) {
   background-color: #0d1117 !important;
   border-color: rgba(255, 255, 255, 0.1);
   color: #c9d1d9;
 }
 
 /* 亮色模式下的代码块 */
-.light .prose pre {
+.light .prose pre:not([data-code-block]) {
   background-color: #0d1117 !important; /* 代码块统一使用黑色背景 */
   border-color: rgba(255, 255, 255, 0.1);
   color: #c9d1d9;

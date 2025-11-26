@@ -123,6 +123,8 @@
             <textarea 
               ref="editorTextarea"
               v-model="formData.content"
+              @keydown="handleKeyDown"
+              @input="handleInput"
               rows="20"
               placeholder="在这里使用 Markdown 语法编写文章内容..."
               class="w-full p-4 resize-none focus:outline-none font-mono text-sm transition-colors"
@@ -140,7 +142,7 @@
             </div>
             <div class="p-4 h-96 overflow-y-auto prose prose-sm max-w-none transition-colors" 
                  :class="isDark ? 'prose-invert bg-tokyo-night-bg' : 'bg-white'">
-              <div v-html="markdownPreview"></div>
+              <MarkdownRenderer :markdown="formData.content" />
             </div>
           </div>
         </div>
@@ -217,9 +219,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch, onMounted } from 'vue'
 import { useTheme } from '../composables/useTheme'
-import { renderMarkdown } from '../utils/markdown'
+import MarkdownRenderer from './MarkdownRenderer.vue'
 
 const { isDark } = useTheme()
 
@@ -279,13 +281,82 @@ watch(() => formData.title, (newTitle) => {
   }
 })
 
-// Markdown 预览
-const markdownPreview = computed(() => {
-  if (!formData.content.trim()) {
-    return '<p class="text-gray-500">开始输入内容以查看预览...</p>'
+// 处理键盘事件（自动缩进）
+const handleKeyDown = (event) => {
+  const textarea = event.target
+  const start = textarea.selectionStart
+  const end = textarea.selectionEnd
+  
+  // Tab 键：插入 2 个空格（自动缩进）
+  if (event.key === 'Tab') {
+    event.preventDefault()
+    
+    const beforeCursor = formData.content.substring(0, start)
+    const afterCursor = formData.content.substring(end)
+    
+    // 如果按 Shift+Tab，减少缩进
+    if (event.shiftKey) {
+      // 查找当前行的开始位置
+      const lineStart = beforeCursor.lastIndexOf('\n') + 1
+      const currentLine = beforeCursor.substring(lineStart)
+      
+      // 如果行首有 2 个空格，删除它们
+      if (currentLine.startsWith('  ')) {
+        const newStart = start - 2
+        formData.content = formData.content.substring(0, lineStart) + 
+                          currentLine.substring(2) + 
+                          afterCursor
+        setTimeout(() => {
+          textarea.setSelectionRange(newStart, newStart)
+        }, 10)
+      }
+    } else {
+      // 普通 Tab：插入 2 个空格
+      const indent = '  '
+      formData.content = beforeCursor + indent + afterCursor
+      setTimeout(() => {
+        textarea.setSelectionRange(start + indent.length, start + indent.length)
+      }, 10)
+    }
   }
-  return renderMarkdown(formData.content)
-})
+  
+  // Enter 键：自动继承上一行的缩进（在默认行为之后处理）
+  if (event.key === 'Enter') {
+    // 不阻止默认行为，让换行先发生
+    setTimeout(() => {
+      const newStart = textarea.selectionStart
+      const beforeCursor = formData.content.substring(0, newStart - 1) // -1 因为已经插入了换行
+      const lineStart = beforeCursor.lastIndexOf('\n') + 1
+      const currentLine = beforeCursor.substring(lineStart)
+      
+      // 计算上一行的前导空格
+      const indentMatch = currentLine.match(/^(\s*)/)
+      if (indentMatch) {
+        const indent = indentMatch[1]
+        
+        // 如果上一行以某些字符结尾，可能需要额外缩进
+        const trimmedLine = currentLine.trim()
+        const needsExtraIndent = /[{\[\(:]$/.test(trimmedLine)
+        
+        // 在当前位置插入缩进
+        const afterCursor = formData.content.substring(newStart)
+        const newIndent = indent + (needsExtraIndent ? '  ' : '')
+        const indentLength = newIndent.length
+        formData.content = formData.content.substring(0, newStart) + newIndent + afterCursor
+        
+        // 设置光标位置
+        setTimeout(() => {
+          textarea.setSelectionRange(newStart + indentLength, newStart + indentLength)
+        }, 10)
+      }
+    }, 0)
+  }
+}
+
+// 处理输入事件（用于其他自动格式化）
+const handleInput = (event) => {
+  // 可以在这里添加其他自动格式化逻辑
+}
 
 // 插入 Markdown 语法
 const insertMarkdown = (markdown) => {
@@ -372,6 +443,11 @@ const saveDraft = () => {
 const publish = () => {
   savePost('published')
 }
+
+// 初始化编辑器
+onMounted(() => {
+  // 可以在这里添加编辑器初始化逻辑
+})
 
 // 保存文章
 const savePost = (status) => {

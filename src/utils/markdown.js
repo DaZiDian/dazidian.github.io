@@ -20,6 +20,7 @@ function escapeHtml(text) {
   return String(text).replace(/[&<>"']/g, m => map[m])
 }
 
+
 // 配置 marked，使用标准的 highlight 选项
 marked.setOptions({
   highlight: function(code, lang) {
@@ -60,24 +61,36 @@ marked.setOptions({
 // 自定义渲染器
 marked.use({
   renderer: {
-    // 代码块渲染 - marked 已经通过 highlight 选项处理了高亮
+    // 代码块渲染 - 添加特殊属性以便后续替换为 Vue 组件
     code(code, infostring, escaped) {
       const lang = (infostring || '').trim() || ''
       
-      // code 参数已经是高亮后的 HTML 字符串（由 highlight 选项处理）
-      // escaped 参数表示代码是否已经被转义/高亮
+      // code 参数：如果 escaped=true，则是高亮后的 HTML；如果 escaped=false，则是原始代码
+      // 我们需要保存原始代码用于 CodeBlock 组件
       let codeStr = String(code || '')
+      let rawCode = String(code || '')
       
-      // 如果没有被高亮（escaped = false），转义 HTML
-      if (!escaped) {
+      // 如果已经被高亮（escaped = true），我们需要从高亮 HTML 中提取原始代码
+      // 但由于我们在 highlight 函数中处理，这里 code 参数实际上是原始代码
+      // 为了安全，我们直接使用 code 参数作为原始代码
+      if (escaped) {
+        // 如果已经转义/高亮，尝试提取原始文本（简单方法：移除 HTML 标签）
+        rawCode = codeStr.replace(/<[^>]+>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#039;/g, "'")
+      } else {
+        // 如果没有被高亮，code 就是原始代码
+        rawCode = codeStr
         codeStr = escapeHtml(codeStr)
       }
       
       // 添加语言类名
       const langClass = lang ? ` language-${escapeHtml(lang)}` : ''
       
-      // 返回代码块 HTML（黑色背景由 CSS 控制）
-      return `<pre><code class="hljs${langClass}">${codeStr}</code></pre>\n`
+      // 转义原始代码以便存储在 data 属性中
+      const escapedRawCode = escapeHtml(rawCode).replace(/"/g, '&quot;')
+      
+      // 返回代码块 HTML，添加特殊属性以便后续替换
+      // 使用 data 属性保存原始代码和语言信息
+      return `<pre data-code-block="true" data-language="${escapeHtml(lang)}" data-raw-code="${escapedRawCode}"><code class="hljs${langClass}">${codeStr}</code></pre>\n`
     },
     // 行内代码
     codespan(code) {

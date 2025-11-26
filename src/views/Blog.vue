@@ -49,10 +49,11 @@
               <!-- 展开的文章详情 -->
               <div v-if="expandedArticles[article.id]" class="mt-4 pt-4 border-t transition-colors"
                    :class="isDark ? 'border-tokyo-night-bg-highlight' : 'border-gray-200'">
-                <div class="prose prose-lg max-w-none transition-colors mb-4"
-                     :class="isDark ? 'prose-invert' : ''"
-                     v-html="renderMarkdown(article.fullContent || article.content)">
-                </div>
+                <MarkdownRenderer 
+                  :markdown="article.fullContent || article.content"
+                  class="prose prose-lg max-w-none transition-colors mb-4"
+                  :class="isDark ? 'prose-invert' : ''"
+                />
               </div>
             </div>
             
@@ -111,7 +112,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useScrollAnimation } from '../composables/useScrollAnimation'
 import { useTheme } from '../composables/useTheme'
 import axios from 'axios'
-import { renderMarkdown } from '../utils/markdown'
+import MarkdownRenderer from '../components/MarkdownRenderer.vue'
 
 useScrollAnimation()
 const { isDark } = useTheme()
