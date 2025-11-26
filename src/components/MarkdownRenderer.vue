@@ -75,146 +75,311 @@ const parsedParts = computed(() => {
   }
   
   const parts = []
+  const codeBlockData = []
   
   try {
-    // 使用 marked 的 lexer 解析 tokens
+    // 使用 lexer 解析 tokens，提取代码块信息
     const tokens = marked.lexer(props.markdown)
     
-    // 调试：检查 tokens
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Markdown tokens:', tokens)
-    }
-    
-    // 创建渲染器用于渲染非代码块内容
-    const renderer = new marked.Renderer()
-    
-    let htmlBuffer = ''
-    
-    for (const token of tokens) {
-      if (token.type === 'code' && token.lang !== undefined) {
-        // 如果之前有 HTML 内容，先保存
-        if (htmlBuffer) {
-          parts.push({
-            type: 'html',
-            html: sanitizeHtml(htmlBuffer)
-          })
-          htmlBuffer = ''
-        }
-        
-        // 添加代码块，确保 code 是字符串
-        let codeText = ''
-        
-        // 优先使用 token.text
-        if (token.text != null) {
-          if (typeof token.text === 'string') {
+    // 递归收集代码块
+    function extractCodeBlocks(tokens) {
+      for (const token of tokens) {
+        if (token.type === 'code' && token.lang !== undefined) {
+          let codeText = ''
+          if (token.text != null && typeof token.text === 'string') {
             codeText = token.text
-          } else if (typeof token.text === 'object') {
-            // 如果是对象，尝试提取文本内容
-            if (token.text.raw) {
-              codeText = String(token.text.raw)
-            } else if (token.text.text) {
-              codeText = String(token.text.text)
-            } else {
-              try {
-                codeText = JSON.stringify(token.text, null, 2)
-              } catch (e) {
-                codeText = String(token.text)
-              }
-            }
-          } else {
-            codeText = String(token.text)
+          } else if (token.raw != null) {
+            let rawText = typeof token.raw === 'string' ? token.raw : String(token.raw)
+            rawText = rawText.replace(/^```[\w-]*\n?/, '').replace(/\n?```$/, '')
+            codeText = rawText
           }
-        } else if (token.raw != null) {
-          // 如果没有 text，尝试使用 raw（需要去除语言标识符部分）
-          let rawText = typeof token.raw === 'string' ? token.raw : String(token.raw)
-          // 移除开头的 ```语言标识符 和结尾的 ```
-          rawText = rawText.replace(/^```[\w-]*\n?/, '').replace(/\n?```$/, '')
-          codeText = rawText
+          
+          let language = 'auto'
+          if (token.lang != null) {
+            language = typeof token.lang === 'string' ? token.lang.trim() : String(token.lang).trim()
+            if (!language) language = 'auto'
+          }
+          
+          codeBlockData.push({ code: codeText, language })
         }
         
-        // 确保语言是字符串
-        let language = 'auto'
-        if (token.lang != null) {
-          if (typeof token.lang === 'string') {
-            language = token.lang.trim() || 'auto'
-          } else {
-            language = String(token.lang).trim() || 'auto'
-          }
-        }
-        
-        // 调试：检查代码块数据
-        if (process.env.NODE_ENV === 'development') {
-          console.log('代码块数据:', { codeText, language, token })
-        }
-        
-        parts.push({
-          type: 'code',
-          code: codeText,
-          language: language
-        })
-      } else {
-        // 渲染其他类型的 token
-        try {
-          const tokenHtml = renderer[token.type]?.(token)
-          if (tokenHtml) {
-            // 确保返回的是字符串
-            const htmlStr = typeof tokenHtml === 'string' 
-              ? tokenHtml 
-              : (typeof tokenHtml === 'object' 
-                ? JSON.stringify(tokenHtml) 
-                : String(tokenHtml))
-            htmlBuffer += htmlStr
-          }
-        } catch (err) {
-          console.warn(`渲染 token 类型 ${token.type} 时出错:`, err)
-          // 如果渲染失败，至少显示原始文本
-          if (token.raw) {
-            htmlBuffer += escapeHtml(String(token.raw))
-          }
+        // 递归处理嵌套
+        if (token.tokens) extractCodeBlocks(token.tokens)
+        if (token.items) {
+          token.items.forEach(item => {
+            if (item.tokens) extractCodeBlocks(item.tokens)
+          })
         }
       }
     }
     
-    // 处理剩余的 HTML
-    if (htmlBuffer) {
-      parts.push({
-        type: 'html',
-        html: sanitizeHtml(htmlBuffer)
-      })
+    extractCodeBlocks(tokens)
+    
+    // 创建自定义渲染器，将代码块替换为占位符
+    const renderer = new marked.Renderer()
+    let codeBlockIndex = 0
+    
+    renderer.code = function(code, infostring) {
+      const lang = (infostring || '').trim() || 'auto'
+      const placeholder = `__CODE_BLOCK_${codeBlockIndex++}__`
+      return placeholder
     }
     
-    // 如果没有解析到任何内容，使用原来的方法
-    if (parts.length === 0) {
-      const html = marked.parse(props.markdown)
+    // 使用自定义渲染器解析
+    const html = marked.parse(props.markdown, { renderer })
+    
+    // 分割 HTML 并插入代码块组件
+    const placeholders = html.match(/__CODE_BLOCK_\d+__/g) || []
+    
+    if (placeholders.length === 0) {
+      // 没有代码块，直接返回
       return [{
         type: 'html',
         html: sanitizeHtml(html)
       }]
     }
     
-    return parts
+    let lastIndex = 0
+    placeholders.forEach((placeholder, index) => {
+      const placeholderIndex = html.indexOf(placeholder, lastIndex)
+      const codeBlock = codeBlockData[index]
+      
+      // 添加占位符前的 HTML
+      if (placeholderIndex > lastIndex) {
+        const htmlPart = html.substring(lastIndex, placeholderIndex)
+        if (htmlPart.trim()) {
+          parts.push({
+            type: 'html',
+            html: sanitizeHtml(htmlPart)
+          })
+        }
+      }
+      
+      // 添加代码块组件
+      if (codeBlock) {
+        parts.push({
+          type: 'code',
+          code: codeBlock.code,
+          language: codeBlock.language
+        })
+      }
+      
+      lastIndex = placeholderIndex + placeholder.length
+    })
+    
+    // 添加剩余的 HTML
+    if (lastIndex < html.length) {
+      const htmlPart = html.substring(lastIndex)
+      if (htmlPart.trim()) {
+        parts.push({
+          type: 'html',
+          html: sanitizeHtml(htmlPart)
+        })
+      }
+    }
+    
+    return parts.length > 0 ? parts : [{
+      type: 'html',
+      html: sanitizeHtml(html)
+    }]
   } catch (error) {
     console.error('Markdown 解析错误:', error)
-    return [{
-      type: 'html',
-      html: `<pre><code class="hljs">${escapeHtml(props.markdown)}</code></pre>`
-    }]
+    try {
+      const html = marked.parse(props.markdown)
+      return [{
+        type: 'html',
+        html: sanitizeHtml(html)
+      }]
+    } catch (parseError) {
+      return [{
+        type: 'html',
+        html: `<pre><code class="hljs">${escapeHtml(props.markdown)}</code></pre>`
+      }]
+    }
   }
 })
 </script>
 
 <style scoped>
 .markdown-renderer {
-  @apply w-full;
+  width: 100%;
 }
 
 .markdown-content {
-  @apply prose prose-lg max-w-none;
+  max-width: none;
+  line-height: 1.75;
+}
+
+/* 标题样式 */
+.markdown-content :deep(h1) {
+  font-size: 2.25em;
+  font-weight: 800;
+  margin-top: 0;
+  margin-bottom: 0.8888889em;
+  line-height: 1.1111111;
+}
+
+.markdown-content :deep(h2) {
+  font-size: 1.5em;
+  font-weight: 700;
+  margin-top: 2em;
+  margin-bottom: 1em;
+  line-height: 1.3333333;
+}
+
+.markdown-content :deep(h3) {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-top: 1.6em;
+  margin-bottom: 0.6em;
+  line-height: 1.6;
+}
+
+.markdown-content :deep(h4) {
+  font-size: 1.125em;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.5555556;
+}
+
+.markdown-content :deep(h5) {
+  font-size: 1em;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.5555556;
+}
+
+.markdown-content :deep(h6) {
+  font-size: 0.875em;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.5555556;
+}
+
+/* 段落 */
+.markdown-content :deep(p) {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+}
+
+/* 列表 */
+.markdown-content :deep(ul),
+.markdown-content :deep(ol) {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  padding-left: 1.625em;
+}
+
+.markdown-content :deep(li) {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.markdown-content :deep(ul > li) {
+  position: relative;
+  padding-left: 0.375em;
+  list-style-type: disc;
+}
+
+.markdown-content :deep(ol > li) {
+  position: relative;
+  padding-left: 0.375em;
+  list-style-type: decimal;
+}
+
+/* 引用 */
+.markdown-content :deep(blockquote) {
+  font-weight: 500;
+  font-style: italic;
+  color: inherit;
+  border-left-width: 0.25rem;
+  border-left-color: rgba(122, 162, 247, 0.5);
+  quotes: "\201C""\201D""\2018""\2019";
+  margin-top: 1.6em;
+  margin-bottom: 1.6em;
+  padding-left: 1em;
+}
+
+/* 链接 */
+.markdown-content :deep(a) {
+  color: #7aa2f7;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.markdown-content :deep(a:hover) {
+  color: #7dcfff;
+}
+
+/* 图片 */
+.markdown-content :deep(img) {
+  margin-top: 2em;
+  margin-bottom: 2em;
+  border-radius: 0.5rem;
+}
+
+/* 表格 */
+.markdown-content :deep(table) {
+  width: 100%;
+  table-layout: auto;
+  text-align: left;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  font-size: 0.875em;
+  line-height: 1.7142857;
+}
+
+.markdown-content :deep(thead) {
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.markdown-content :deep(thead th) {
+  color: inherit;
+  font-weight: 600;
+  vertical-align: bottom;
+  padding-right: 0.5714286em;
+  padding-bottom: 0.5714286em;
+  padding-left: 0.5714286em;
+}
+
+.markdown-content :deep(tbody tr) {
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.markdown-content :deep(tbody td) {
+  vertical-align: baseline;
+  padding-top: 0.5714286em;
+  padding-right: 0.5714286em;
+  padding-bottom: 0.5714286em;
+  padding-left: 0.5714286em;
+}
+
+/* 水平线 */
+.markdown-content :deep(hr) {
+  border-color: rgba(255, 255, 255, 0.1);
+  border-top-width: 1px;
+  margin-top: 3em;
+  margin-bottom: 3em;
+}
+
+/* 强调 */
+.markdown-content :deep(strong) {
+  font-weight: 600;
+}
+
+.markdown-content :deep(em) {
+  font-style: italic;
 }
 
 /* 行内代码样式 */
 .markdown-content :deep(:not(pre) > code) {
-  @apply px-1.5 py-0.5 rounded;
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
   background-color: rgba(110, 118, 129, 0.4);
   font-size: 0.875em;
   font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
