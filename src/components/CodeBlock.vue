@@ -438,11 +438,17 @@ onMounted(() => {
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   min-width: 50px;
   user-select: none;
+  line-height: 1.6;
 }
 
 .code-block-line-numbers .line-number {
-  @apply text-xs leading-6;
+  @apply text-xs;
   font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+  line-height: 1.6;
+  height: 1.6em;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .code-block-line-numbers .line-number.dark {
@@ -471,13 +477,14 @@ onMounted(() => {
   background-color: transparent !important;
   padding: 0;
   font-size: inherit;
-  line-height: inherit;
+  line-height: 1.6 !important;
   color: inherit;
 }
 
 /* 确保代码正常显示 */
 .code-block-pre code :deep(*) {
   display: inline;
+  line-height: 1.6 !important;
 }
 
 /* 自定义滚动条 */

@@ -87,6 +87,90 @@ function sanitizeHtml(html) {
   return safeHtml
 }
 
+// 预处理 Markdown：将 HTML 标签转换为代码块
+function preprocessMarkdown(markdown) {
+  if (!markdown || typeof markdown !== 'string') {
+    return markdown
+  }
+  
+  let processedMarkdown = markdown
+  const replacements = []
+  
+  // 匹配所有 HTML 标签（包括单标签和双标签）
+  // 匹配 <tag>...</tag> 或 <tag /> 格式
+  const htmlTagRegex = /<([a-zA-Z][a-zA-Z0-9]*)(?:\s[^>]*)?(?:\/>|>[\s\S]*?<\/\1>)/gi
+  
+  let match
+  while ((match = htmlTagRegex.exec(markdown)) !== null) {
+    const fullMatch = match[0]
+    const tagName = match[1].toLowerCase()
+    const matchIndex = match.index
+    
+    // 检查是否已经在代码块中
+    const beforeMatch = markdown.substring(0, matchIndex)
+    const codeBlockCount = (beforeMatch.match(/```/g) || []).length
+    if (codeBlockCount % 2 === 1) {
+      // 在代码块中，跳过
+      continue
+    }
+    
+    // 检查是否在行内代码中
+    const beforeLine = beforeMatch.split('\n').pop() || ''
+    const backtickCount = (beforeLine.match(/`/g) || []).length
+    if (backtickCount % 2 === 1) {
+      // 在行内代码中，跳过
+      continue
+    }
+    
+    // 确定语言类型
+    let language = 'html'
+    if (tagName === 'script') {
+      // 检查 script 标签中的类型
+      const typeMatch = fullMatch.match(/type\s*=\s*["']([^"']+)["']/i)
+      if (typeMatch) {
+        const type = typeMatch[1].toLowerCase()
+        if (type.includes('javascript') || type.includes('js') || type === 'text/javascript') {
+          language = 'javascript'
+        } else if (type.includes('typescript') || type.includes('ts')) {
+          language = 'typescript'
+        } else if (type.includes('json')) {
+          language = 'json'
+        }
+      } else {
+        language = 'javascript' // 默认 JavaScript
+      }
+    } else if (tagName === 'style') {
+      language = 'css'
+    } else if (tagName === 'svg') {
+      language = 'xml'
+    }
+    
+    // 获取前面的内容（换行和缩进）
+    const lineStart = beforeMatch.lastIndexOf('\n')
+    const beforeLineContent = lineStart >= 0 ? beforeMatch.substring(lineStart + 1) : beforeMatch
+    const indent = beforeLineContent.match(/^[ \t]*/)?.[0] || ''
+    const beforeNewline = lineStart >= 0 ? '\n' : (matchIndex === 0 ? '' : '\n')
+    
+    // 创建代码块
+    const codeBlock = `${beforeNewline}${indent}\`\`\`${language}\n${indent}${fullMatch}\n${indent}\`\`\``
+    replacements.push({
+      start: matchIndex,
+      end: matchIndex + fullMatch.length,
+      replacement: codeBlock,
+      original: fullMatch
+    })
+  }
+  
+  // 从后往前替换，避免索引偏移
+  replacements.reverse().forEach(replacement => {
+    processedMarkdown = processedMarkdown.substring(0, replacement.start) + 
+                       replacement.replacement + 
+                       processedMarkdown.substring(replacement.end)
+  })
+  
+  return processedMarkdown
+}
+
 // 解析 Markdown 并分离代码块
 const parsedParts = computed(() => {
   if (!props.markdown || typeof props.markdown !== 'string') {
@@ -97,8 +181,11 @@ const parsedParts = computed(() => {
   const codeBlockData = []
   
   try {
+    // 预处理：将 HTML 标签转换为代码块
+    const preprocessedMarkdown = preprocessMarkdown(props.markdown)
+    
     // 使用 lexer 解析 tokens，提取代码块信息
-    const tokens = marked.lexer(props.markdown)
+    const tokens = marked.lexer(preprocessedMarkdown)
     
     // 递归收集代码块
     function extractCodeBlocks(tokens) {
@@ -166,8 +253,8 @@ const parsedParts = computed(() => {
       return ''
     }
     
-    // 使用自定义渲染器解析
-    const html = marked.parse(props.markdown, { renderer })
+    // 使用自定义渲染器解析（使用预处理后的 Markdown）
+    const html = marked.parse(preprocessedMarkdown, { renderer })
     
     // 分割 HTML 并插入代码块组件
     const placeholders = html.match(/__CODE_BLOCK_\d+__/g) || []
