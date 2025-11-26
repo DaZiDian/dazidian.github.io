@@ -41,9 +41,24 @@ function escapeHtml(text) {
 
 // 清理 HTML
 function sanitizeHtml(html) {
-  if (!html || typeof html !== 'string') return ''
+  if (!html) return ''
   
-  let safeHtml = html
+  // 确保 html 是字符串
+  let htmlStr = ''
+  if (typeof html === 'string') {
+    htmlStr = html
+  } else if (typeof html === 'object') {
+    // 如果是对象，尝试转换为字符串
+    try {
+      htmlStr = JSON.stringify(html)
+    } catch (e) {
+      htmlStr = String(html)
+    }
+  } else {
+    htmlStr = String(html)
+  }
+  
+  let safeHtml = htmlStr
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     .replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, '')
     .replace(/\s*on\w+\s*=\s*[^\s>]*/gi, '')
@@ -65,6 +80,11 @@ const parsedParts = computed(() => {
     // 使用 marked 的 lexer 解析 tokens
     const tokens = marked.lexer(props.markdown)
     
+    // 调试：检查 tokens
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Markdown tokens:', tokens)
+    }
+    
     // 创建渲染器用于渲染非代码块内容
     const renderer = new marked.Renderer()
     
@@ -82,17 +102,75 @@ const parsedParts = computed(() => {
         }
         
         // 添加代码块，确保 code 是字符串
-        const codeText = token.text || ''
+        let codeText = ''
+        
+        // 优先使用 token.text
+        if (token.text != null) {
+          if (typeof token.text === 'string') {
+            codeText = token.text
+          } else if (typeof token.text === 'object') {
+            // 如果是对象，尝试提取文本内容
+            if (token.text.raw) {
+              codeText = String(token.text.raw)
+            } else if (token.text.text) {
+              codeText = String(token.text.text)
+            } else {
+              try {
+                codeText = JSON.stringify(token.text, null, 2)
+              } catch (e) {
+                codeText = String(token.text)
+              }
+            }
+          } else {
+            codeText = String(token.text)
+          }
+        } else if (token.raw != null) {
+          // 如果没有 text，尝试使用 raw（需要去除语言标识符部分）
+          let rawText = typeof token.raw === 'string' ? token.raw : String(token.raw)
+          // 移除开头的 ```语言标识符 和结尾的 ```
+          rawText = rawText.replace(/^```[\w-]*\n?/, '').replace(/\n?```$/, '')
+          codeText = rawText
+        }
+        
+        // 确保语言是字符串
+        let language = 'auto'
+        if (token.lang != null) {
+          if (typeof token.lang === 'string') {
+            language = token.lang.trim() || 'auto'
+          } else {
+            language = String(token.lang).trim() || 'auto'
+          }
+        }
+        
+        // 调试：检查代码块数据
+        if (process.env.NODE_ENV === 'development') {
+          console.log('代码块数据:', { codeText, language, token })
+        }
+        
         parts.push({
           type: 'code',
-          code: typeof codeText === 'string' ? codeText : String(codeText),
-          language: token.lang || 'auto'
+          code: codeText,
+          language: language
         })
       } else {
         // 渲染其他类型的 token
-        const tokenHtml = renderer[token.type]?.(token)
-        if (tokenHtml) {
-          htmlBuffer += tokenHtml
+        try {
+          const tokenHtml = renderer[token.type]?.(token)
+          if (tokenHtml) {
+            // 确保返回的是字符串
+            const htmlStr = typeof tokenHtml === 'string' 
+              ? tokenHtml 
+              : (typeof tokenHtml === 'object' 
+                ? JSON.stringify(tokenHtml) 
+                : String(tokenHtml))
+            htmlBuffer += htmlStr
+          }
+        } catch (err) {
+          console.warn(`渲染 token 类型 ${token.type} 时出错:`, err)
+          // 如果渲染失败，至少显示原始文本
+          if (token.raw) {
+            htmlBuffer += escapeHtml(String(token.raw))
+          }
         }
       }
     }

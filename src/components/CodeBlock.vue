@@ -72,8 +72,9 @@ import { useTheme } from '../composables/useTheme'
 
 const props = defineProps({
   code: {
-    type: String,
-    required: true
+    type: [String, Object],
+    required: true,
+    default: ''
   },
   language: {
     type: String,
@@ -177,8 +178,25 @@ function handleLangChange() {
 
 // 更新高亮
 function updateHighlight() {
+  // 确保 code 是字符串
+  let codeStr = ''
+  if (props.code == null || props.code === undefined) {
+    codeStr = ''
+  } else if (typeof props.code === 'string') {
+    codeStr = props.code
+  } else if (typeof props.code === 'object') {
+    // 如果是对象，尝试转换为字符串
+    try {
+      codeStr = JSON.stringify(props.code, null, 2)
+    } catch (e) {
+      codeStr = String(props.code)
+    }
+  } else {
+    codeStr = String(props.code)
+  }
+  
   const lang = selectedLang.value === 'auto' ? detectedLang.value : selectedLang.value
-  highlightedCode.value = highlightCode(props.code, lang)
+  highlightedCode.value = highlightCode(codeStr, lang)
   
   // 同步滚动
   nextTick(() => {
