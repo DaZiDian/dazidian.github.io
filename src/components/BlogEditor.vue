@@ -142,7 +142,12 @@
             </div>
             <div class="p-4 h-96 overflow-y-auto prose prose-sm max-w-none transition-colors" 
                  :class="isDark ? 'prose-invert bg-tokyo-night-bg' : 'bg-white'">
-              <MarkdownRenderer :markdown="formData.content" />
+              <MarkdownRenderer 
+                :markdown="formData.content" 
+                :editable="true"
+                :show-language-selector="true"
+                @language-change="handleCodeBlockLanguageChange"
+              />
             </div>
           </div>
         </div>
@@ -356,6 +361,36 @@ const handleKeyDown = (event) => {
 // 处理输入事件（用于其他自动格式化）
 const handleInput = (event) => {
   // 可以在这里添加其他自动格式化逻辑
+}
+
+// 处理代码块语言变化
+function handleCodeBlockLanguageChange(event) {
+  const { index, language } = event
+  
+  // 查找所有代码块
+  const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g
+  const matches = []
+  let match
+  
+  while ((match = codeBlockRegex.exec(formData.content)) !== null) {
+    matches.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      lang: match[1] || '',
+      code: match[2],
+      fullMatch: match[0]
+    })
+  }
+  
+  // 更新指定索引的代码块语言
+  if (matches[index] && language) {
+    const codeBlock = matches[index]
+    const newCodeBlock = `\`\`\`${language}\n${codeBlock.code}\`\`\``
+    
+    formData.content = formData.content.substring(0, codeBlock.start) + 
+                      newCodeBlock + 
+                      formData.content.substring(codeBlock.end)
+  }
 }
 
 // 插入 Markdown 语法

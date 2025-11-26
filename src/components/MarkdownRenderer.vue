@@ -5,6 +5,10 @@
         v-if="part.type === 'code'" 
         :code="part.code" 
         :language="part.language"
+        :show-language-selector="showLanguageSelector"
+        :editable="editable"
+        :code-block-index="part.index"
+        @language-change="handleCodeBlockLanguageChange"
       />
       <div v-else v-html="part.html" class="markdown-content"></div>
     </template>
@@ -21,10 +25,25 @@ const props = defineProps({
   markdown: {
     type: String,
     default: ''
+  },
+  editable: {
+    type: Boolean,
+    default: false
+  },
+  showLanguageSelector: {
+    type: Boolean,
+    default: true
   }
 })
 
+const emit = defineEmits(['language-change'])
+
 const { isDark } = useTheme()
+
+// 处理代码块语言变化
+function handleCodeBlockLanguageChange(event) {
+  emit('language-change', event)
+}
 
 // 转义 HTML
 function escapeHtml(text) {
@@ -100,7 +119,7 @@ const parsedParts = computed(() => {
             if (!language) language = 'auto'
           }
           
-          codeBlockData.push({ code: codeText, language })
+          codeBlockData.push({ code: codeText, language, index: codeBlockData.length })
         }
         
         // 递归处理嵌套
@@ -123,6 +142,28 @@ const parsedParts = computed(() => {
       const lang = (infostring || '').trim() || 'auto'
       const placeholder = `__CODE_BLOCK_${codeBlockIndex++}__`
       return placeholder
+    }
+    
+    // 处理 HTML 块，将 HTML 标签转换为代码块
+    const originalHtml = renderer.html
+    renderer.html = function(html) {
+      const htmlStr = String(html || '').trim()
+      
+      // 如果包含 HTML 标签，将其作为 HTML 代码块显示
+      if (htmlStr && htmlStr.match(/<[^>]+>/)) {
+        // 提取 HTML 代码并添加到代码块数据中
+        let language = 'html'
+        const currentIndex = codeBlockData.length
+        codeBlockData.push({ code: htmlStr, language, index: currentIndex })
+        // 返回占位符，但需要确保索引正确
+        return `__CODE_BLOCK_${currentIndex}__`
+      }
+      
+      // 如果不是 HTML 标签，使用默认渲染或返回空
+      if (originalHtml) {
+        return originalHtml.call(this, html)
+      }
+      return ''
     }
     
     // 使用自定义渲染器解析
@@ -160,7 +201,8 @@ const parsedParts = computed(() => {
         parts.push({
           type: 'code',
           code: codeBlock.code,
-          language: codeBlock.language
+          language: codeBlock.language,
+          index: codeBlock.index
         })
       }
       

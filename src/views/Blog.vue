@@ -53,6 +53,8 @@
                   :markdown="article.fullContent || article.content"
                   class="prose prose-lg max-w-none transition-colors mb-4"
                   :class="isDark ? 'prose-invert' : ''"
+                  :editable="false"
+                  :show-language-selector="false"
                 />
               </div>
             </div>

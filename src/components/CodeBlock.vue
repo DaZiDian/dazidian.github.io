@@ -2,9 +2,10 @@
   <div class="code-block-wrapper" :class="isDark ? 'dark' : 'light'">
     <!-- 工具栏 -->
     <div class="code-block-header">
-      <!-- 左上角：语言选择器 -->
+      <!-- 左上角：语言选择器或语言显示 -->
       <div class="code-block-lang-selector">
         <select 
+          v-if="showLanguageSelector"
           v-model="selectedLang" 
           @change="handleLangChange"
           class="lang-select"
@@ -15,6 +16,9 @@
             {{ lang }}
           </option>
         </select>
+        <span v-else class="lang-display" :class="isDark ? 'dark' : 'light'">
+          {{ displayLanguage }}
+        </span>
       </div>
       
       <!-- 右上角：复制按钮 -->
@@ -79,8 +83,22 @@ const props = defineProps({
   language: {
     type: String,
     default: 'auto'
+  },
+  showLanguageSelector: {
+    type: Boolean,
+    default: true
+  },
+  editable: {
+    type: Boolean,
+    default: false
+  },
+  codeBlockIndex: {
+    type: Number,
+    default: -1
   }
 })
+
+const emit = defineEmits(['language-change'])
 
 const { isDark } = useTheme()
 
@@ -103,6 +121,14 @@ const highlightedCode = ref('')
 const copied = ref(false)
 // 行数
 const lineCount = ref(1)
+
+// 显示的语言（用于只读模式）
+const displayLanguage = computed(() => {
+  if (selectedLang.value === 'auto') {
+    return detectedLang.value || 'plaintext'
+  }
+  return selectedLang.value
+})
 
 // 代码包装器引用
 const codeWrapperRef = ref(null)
@@ -174,6 +200,14 @@ function highlightCode(code, lang) {
 // 处理语言变化
 function handleLangChange() {
   updateHighlight()
+  
+  // 如果是可编辑模式，通知父组件更新Markdown源码
+  if (props.editable && props.codeBlockIndex >= 0) {
+    emit('language-change', {
+      index: props.codeBlockIndex,
+      language: selectedLang.value === 'auto' ? detectedLang.value : selectedLang.value
+    })
+  }
 }
 
 // 更新高亮
@@ -330,6 +364,23 @@ onMounted(() => {
 
 .lang-select.light:hover {
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+.lang-display {
+  @apply px-3 py-1 rounded text-sm font-medium;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  user-select: none;
+}
+
+.lang-display.dark {
+  color: #c9d1d9;
+}
+
+.lang-display.light {
+  color: #24292e;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
 .copy-button {
