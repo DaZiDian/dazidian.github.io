@@ -462,6 +462,8 @@ onMounted(() => {
 
 .code-block-code-wrapper {
   @apply flex-1 overflow-auto;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .code-block-pre {
@@ -471,8 +473,9 @@ onMounted(() => {
   font-size: 0.875rem;
   line-height: 1.6;
   color: #c9d1d9;
-  padding: 1rem;
-  padding-left: 0;
+  padding: 0;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .code-block-pre code {
