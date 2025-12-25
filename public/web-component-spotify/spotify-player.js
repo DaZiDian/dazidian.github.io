@@ -23,6 +23,7 @@
       this.render();
       this.restoreSession();
       this.bindMessage();
+      this.checkRedirectFallback();
     }
 
     render() {
