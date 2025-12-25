@@ -2,7 +2,7 @@
   if (window.customElements.get('spotify-player')) return;
 
   const CLIENT_ID = 'c28e8be7094940c58fb46b4ae1aac24d';
-  const REDIRECT_URI = 'https://dazd.me/spotify-player/callback';
+  const REDIRECT_URI = 'https://dazd.me/spotify-player/callback.html';
   const SCOPES = [
     'user-read-playback-state',
     'user-modify-playback-state',
