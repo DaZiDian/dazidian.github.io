@@ -18,14 +18,23 @@
       this.refreshToken = null;
       this.expiresAt = 0;
     }
-
+    
     connectedCallback() {
       this.render();
       this.restoreSession();
       this.bindMessage();
       this.checkRedirectFallback();
     }
+    
+    checkRedirectFallback() {
+      const code = sessionStorage.getItem('SPOTIFY_AUTH_CODE');
+      if (code) {
+        sessionStorage.removeItem('SPOTIFY_AUTH_CODE');
+        this.exchangeToken(code);
+      }
+    }
 
+    
     render() {
       this.shadowRoot.innerHTML = `
         <style>
