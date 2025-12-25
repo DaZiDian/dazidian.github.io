@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spotify Authorization</title>
+</head>
+<body>
+<script>
+(() => {
+  const params = new URLSearchParams(location.search);
+  const code = params.get('code');
+  const error = params.get('error');
+
+  if (window.opener) {
+    window.opener.postMessage({
+      type: 'SPOTIFY_AUTH_CALLBACK',
+      code,
+      error
+    }, '*');
+    window.close();
+  } else {
+    document.body.innerText = 'Authorization complete. You may close this window.';
+  }
+})();
+</script>
+</body>
+</html>
