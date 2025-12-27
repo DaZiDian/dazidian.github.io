@@ -85,7 +85,7 @@
               <div>
                 <p class="font-bold text-lg mb-2 transition-colors" :class="isDark ? 'text-white' : 'text-gray-800'">
                   <img src="/img/cloud-server.png" alt="server" class="inline w-6 h-6 mr-2" />
-                  Home Server
+                  HomeLab Server
                 </p>
                 <ul class="space-y-1 text-sm ml-4 transition-colors" :class="isDark ? 'text-gray-300' : 'text-gray-600'">
                   <li>• AMD® Ryzen™ 7 5700X</li>
@@ -93,7 +93,19 @@
                   <li>• ADATA XPG 16G*4 DDR4 3600MHz</li>
                   <li>• NVIDIA Tesla T4 16GB</li>
                   <li>• WD Blue SSD 1TB</li>
-                  <li>• WD Blue HDD 4TB*2</li>
+                </ul>
+                <p class="font-bold text-lg mb-2 transition-colors" :class="isDark ? 'text-white' : 'text-gray-800'">
+                  <img src="/img/cloud-server.png" alt="server" class="inline w-6 h-6 mr-2" />
+                  (FUTURE)DSMCC Server
+                </p>
+                <ul class="space-y-1 text-sm ml-4 transition-colors" :class="isDark ? 'text-gray-300' : 'text-gray-600'">
+                  <li>• AMD® Ryzen™ 9 9950X</li>
+                  <li>• Thermalright AQUA ELITE 360</li>
+                  <li>• ADATA XPG 32G*4 DDR5 6000MHz</li>
+                  <li>• NVIDIA GeForce RTX 5080 16GB</li>
+                  <li>• Intel® Optane™ SSD P5801X 800GB</li>
+                  <li>• WD Black SSD 2TB</li>
+                  <li>• WD Blue HDD 4TB*4</li>
                 </ul>
               </div>
 
