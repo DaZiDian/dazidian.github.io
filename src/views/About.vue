@@ -77,7 +77,8 @@
 
               <!-- 手机 -->
               <div>
-                <p class="font-bold text-lg mb-2 transition-colors" :class="isDark ? 'text-white' : 'text-gray-800'">📱 Xiaomi 12S Ultra</p>
+                <p class="font-bold text-lg mb-2 transition-colors" :class="isDark ? 'text-white' : 'text-gray-800'"><img alt="Static Badge" src="https://img.shields.io/badge/Xiaomi-%23FF6900.svg?logo=Xiaomi&logoColor=white">
+Xiaomi 12S Ultra</p>
                 <p class="text-sm ml-4 transition-colors" :class="isDark ? 'text-gray-300' : 'text-gray-600'">Black 12+256G</p>
               </div>
 
