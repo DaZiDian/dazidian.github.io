@@ -65,13 +65,13 @@
             <div class="space-y-6">
               <!-- 笔记本 -->
               <div>
-                <p class="font-bold text-lg mb-2 transition-colors" :class="isDark ? 'text-white' : 'text-gray-800'">💻 Lenovo Thinkbook 16+ 2025</p>
+                <p class="font-bold text-lg mb-2 transition-colors" :class="isDark ? 'text-white' : 'text-gray-800'"><img alt="Static Badge" src="https://img.shields.io/badge/Lenovo-%23E2231A.svg?logo=Lenovo&logoColor=white"> Lenovo Thinkbook 16+ 2025</p>
                 <ul class="space-y-1 text-sm ml-4 transition-colors" :class="isDark ? 'text-gray-300' : 'text-gray-600'">
-                  <li>• Intel® Core™ Ultra 9 285H</li>
-                  <li>• NVIDIA GeForce RTX 5060 Laptop</li>
-                  <li>• Samsung DDR5 16G*2 5600MHz</li>
-                  <li>• UMIS RPJYJ1T24RLS1QWY</li>
-                  <li>• KINGSTON SNV2S1000G</li>
+                  <li><img alt="Static Badge" src="https://img.shields.io/badge/Intel-%230071C5.svg?logo=intel&logoColor=white"> Intel® Core™ Ultra 9 285H</li>
+                  <li><img alt="Static Badge" src="https://img.shields.io/badge/NVIDIA-%2376B900.svg?logo=nvidia&logoColor=white"> NVIDIA GeForce RTX 5060 Laptop</li>
+                  <li><img alt="Static Badge" src="https://img.shields.io/badge/Samsung-%231428A0.svg?logo=Samsung&logoColor=white"> Samsung DDR5 16G*2 5600MHz</li>
+                  <li><img alt="Static Badge" src="https://img.shields.io/badge/UMIS-%23E2231A.svg?logo=Lenovo&logoColor=white"> UMIS RPJYJ1T24RLS1QWY</li>
+                  <li><img alt="Static Badge" src="https://img.shields.io/badge/Kingston-%23000000.svg?logo=kingston%20technology&logoColor=white">KINGSTON SNV2S1000G</li>
                 </ul>
               </div>
 
