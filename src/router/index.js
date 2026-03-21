@@ -4,7 +4,9 @@ import About from '../views/About.vue'
 import Blog from '../views/Blog.vue'
 import Guestbook from '../views/Guestbook.vue'
 import Shop from '../views/Shop.vue'
-import BlogAdmin from '../views/BlogAdmin.vue'
+import Friends from '../views/Friends.vue'
+import AdminLogin from '../views/AdminLogin.vue'
+import AdminDashboard from '../views/AdminDashboard.vue'
 
 // 动态导入博客文章
 const blogComponents = {
@@ -45,6 +47,12 @@ const routes = [
     meta: { title: '留言板 - DaZiDian' }
   },
   {
+    path: '/friends',
+    name: 'Friends',
+    component: Friends,
+    meta: { title: '友情链接 - DaZiDian' }
+  },
+  {
     path: '/shop',
     name: 'Shops',
     component: Shop,
@@ -63,10 +71,23 @@ const routes = [
     meta: { title: (route) => `${route.params.slug} - DaZiDian` }
   },
   {
+    path: '/admin/login',
+    name: 'AdminLogin',
+    component: AdminLogin,
+    meta: { title: '后台登录 - DaZiDian' }
+  },
+  {
+    path: '/admin',
+    name: 'AdminDashboard',
+    component: AdminDashboard,
+    meta: {
+      title: '后台管理 - DaZiDian',
+      requiresAuth: true
+    }
+  },
+  {
     path: '/admin/blog',
-    name: 'BlogAdmin',
-    component: BlogAdmin,
-    meta: { title: '博客管理 - DaZiDian' }
+    redirect: '/admin'
   }
 ]
 
@@ -83,6 +104,21 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('blog_admin_token')
+
+  if (to.meta.requiresAuth && !hasToken) {
+    next({
+      path: '/admin/login',
+      query: { redirect: to.fullPath }
+    })
+    return
+  }
+
+  if (to.path === '/admin/login' && hasToken) {
+    next('/admin')
+    return
+  }
+
   // 处理动态标题（支持函数形式）
   const title = typeof to.meta.title === 'function' 
     ? to.meta.title(to) 

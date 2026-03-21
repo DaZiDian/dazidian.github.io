@@ -197,11 +197,11 @@ const devTools = ref([
 <style scoped>
 /* 艺术签名 - 根据主题动态变色 */
 .dark .signature-text {
-  background: linear-gradient(135deg, #7aa2f7 0%, #bb9af7 50%, #7dcfff 100%);
+  background: linear-gradient(135deg, var(--tokyo-night-blue) 0%, var(--tokyo-night-magenta) 50%, var(--tokyo-night-cyan) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  color: #7aa2f7;
+  color: var(--tokyo-night-blue);
   animation: gradientShift 3s ease infinite;
   background-size: 200% 200%;
 }
@@ -218,11 +218,11 @@ const devTools = ref([
 
 /* 区段标题样式 */
 .dark .section-title {
-  background: linear-gradient(90deg, #7aa2f7, #7dcfff);
+  background: linear-gradient(90deg, var(--tokyo-night-blue), var(--tokyo-night-cyan));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  color: #7aa2f7;
+  color: var(--tokyo-night-blue);
 }
 
 .light .section-title {
@@ -234,11 +234,11 @@ const devTools = ref([
 }
 
 .dark .section-title-alt {
-  background: linear-gradient(90deg, #bb9af7, #9d7cd8);
+  background: linear-gradient(90deg, var(--tokyo-night-magenta), var(--tokyo-night-purple));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  color: #bb9af7;
+  color: var(--tokyo-night-magenta);
 }
 
 .light .section-title-alt {
@@ -250,11 +250,11 @@ const devTools = ref([
 }
 
 .dark .section-title-orange {
-  background: linear-gradient(90deg, #ff9e64, #e0af68);
+  background: linear-gradient(90deg, var(--tokyo-night-orange), var(--tokyo-night-yellow));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  color: #ff9e64;
+  color: var(--tokyo-night-orange);
 }
 
 .light .section-title-orange {
@@ -267,7 +267,7 @@ const devTools = ref([
 
 /* 音乐盒背景 */
 .dark .music-box-bg {
-  background: linear-gradient(135deg, #bb9af7, #9d7cd8);
+  background: linear-gradient(135deg, var(--tokyo-night-magenta), var(--tokyo-night-purple));
 }
 
 .light .music-box-bg {
@@ -276,7 +276,7 @@ const devTools = ref([
 
 /* 进度条 */
 .dark .progress-bar {
-  background: linear-gradient(90deg, #7aa2f7, #7dcfff);
+  background: linear-gradient(90deg, var(--tokyo-night-blue), var(--tokyo-night-cyan));
 }
 
 .light .progress-bar {
@@ -285,7 +285,7 @@ const devTools = ref([
 
 /* 边框主题 */
 .dark .border-theme {
-  border-color: rgba(122, 162, 247, 0.3);
+  border-color: color-mix(in srgb, var(--tokyo-night-blue) 35%, transparent);
 }
 
 .light .border-theme {

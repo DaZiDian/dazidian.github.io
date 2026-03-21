@@ -127,15 +127,125 @@ body {
   --tokyo-night-teal: #1abc9c;
   --tokyo-night-red: #f7768e;
   --tokyo-night-red1: #db4b4b;
+  --theme-glow: #7dcfff;
+  --light-bg-base: #f8fbff;
+  --light-bg-start: #f8fbff;
+  --light-bg-mid: #eef4ff;
+  --light-bg-end: #fdfdff;
+  --light-bg-glow1: rgba(59, 130, 246, 0.14);
+  --light-bg-glow2: rgba(14, 165, 233, 0.12);
+  --light-bg-pattern: rgba(59, 130, 246, 0.06);
+  --light-bg-pattern-soft: rgba(59, 130, 246, 0.04);
 }
 
 /* 主题背景 */
 .tokyo-night-bg {
-  background: linear-gradient(135deg, #1a1b26 0%, #16161e 50%, #1a1b26 100%);
+  background:
+    radial-gradient(
+      circle at 18% -5%,
+      color-mix(in srgb, var(--theme-glow) 24%, transparent),
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at 85% 0%,
+      color-mix(in srgb, var(--tokyo-night-magenta) 18%, transparent),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      var(--tokyo-night-bg) 0%,
+      var(--tokyo-night-bg-dark) 52%,
+      var(--tokyo-night-bg) 100%
+    );
+  background-attachment: fixed;
 }
 
 .light-bg {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 50%, #f8f9fa 100%);
+  background-color: var(--light-bg-base);
+  background-image:
+    radial-gradient(circle at 22% 12%, var(--light-bg-glow1), transparent 34%),
+    radial-gradient(circle at 88% 2%, var(--light-bg-glow2), transparent 30%),
+    linear-gradient(135deg, var(--light-bg-start) 0%, var(--light-bg-mid) 50%, var(--light-bg-end) 100%),
+    repeating-linear-gradient(
+      35deg,
+      var(--light-bg-pattern) 0 1px,
+      transparent 1px 24px
+    ),
+    repeating-linear-gradient(
+      -35deg,
+      var(--light-bg-pattern-soft) 0 1px,
+      transparent 1px 30px
+    );
+  background-attachment: fixed;
+}
+
+/* 动态覆盖 Tailwind 主题色（用于黑夜预设调色盘） */
+.dark .bg-tokyo-night-bg {
+  background-color: var(--tokyo-night-bg) !important;
+}
+
+.dark .bg-tokyo-night-bg-highlight {
+  background-color: var(--tokyo-night-bg-highlight) !important;
+}
+
+.dark .bg-tokyo-night-blue {
+  background-color: var(--tokyo-night-blue) !important;
+}
+
+.dark .bg-tokyo-night-blue\/20 {
+  background-color: color-mix(in srgb, var(--tokyo-night-blue) 20%, transparent) !important;
+}
+
+.dark .bg-tokyo-night-green\/20 {
+  background-color: color-mix(in srgb, var(--tokyo-night-green) 20%, transparent) !important;
+}
+
+.dark .hover\:bg-tokyo-night-blue:hover {
+  background-color: var(--tokyo-night-blue) !important;
+}
+
+.dark .hover\:bg-tokyo-night-blue0:hover {
+  background-color: var(--tokyo-night-blue0) !important;
+}
+
+.dark .text-tokyo-night-fg {
+  color: var(--tokyo-night-fg) !important;
+}
+
+.dark .text-tokyo-night-fg-dark {
+  color: var(--tokyo-night-fg-dark) !important;
+}
+
+.dark .text-tokyo-night-cyan {
+  color: var(--tokyo-night-cyan) !important;
+}
+
+.dark .text-tokyo-night-blue {
+  color: var(--tokyo-night-blue) !important;
+}
+
+.dark .text-tokyo-night-magenta {
+  color: var(--tokyo-night-magenta) !important;
+}
+
+.dark .text-tokyo-night-green {
+  color: var(--tokyo-night-green) !important;
+}
+
+.dark .border-tokyo-night-blue {
+  border-color: var(--tokyo-night-blue) !important;
+}
+
+.dark .border-tokyo-night-blue\/30 {
+  border-color: color-mix(in srgb, var(--tokyo-night-blue) 32%, transparent) !important;
+}
+
+.dark .border-tokyo-night-blue\/40 {
+  border-color: color-mix(in srgb, var(--tokyo-night-blue) 44%, transparent) !important;
+}
+
+.dark .border-tokyo-night-bg-highlight {
+  border-color: color-mix(in srgb, var(--tokyo-night-blue) 20%, transparent) !important;
 }
 
 /* 主题切换过渡 */
@@ -149,12 +259,14 @@ body {
 
 /* 毛玻璃效果 - 增强版本，确保内容清晰可见 */
 .dark .glass-effect {
-  background: rgba(30, 41, 59, 0.35);
+  background: color-mix(in srgb, var(--tokyo-night-bg-highlight) 75%, transparent);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(122, 162, 247, 0.25);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(122, 162, 247, 0.1);
-  color: #ffffff;
+  border: 1px solid color-mix(in srgb, var(--tokyo-night-blue) 30%, transparent);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    0 4px 12px color-mix(in srgb, var(--theme-glow) 20%, transparent);
+  color: #fff;
 }
 
 .light .glass-effect {
@@ -168,11 +280,13 @@ body {
 
 /* 深色毛玻璃效果 */
 .dark .glass-effect-dark {
-  background: rgba(15, 23, 42, 0.8);
+  background: color-mix(in srgb, var(--tokyo-night-bg-dark) 85%, transparent);
   backdrop-filter: blur(16px) saturate(150%);
   -webkit-backdrop-filter: blur(16px) saturate(150%);
-  border: 1px solid rgba(122, 162, 247, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 4px 12px rgba(122, 162, 247, 0.15);
+  border: 1px solid color-mix(in srgb, var(--tokyo-night-blue) 22%, transparent);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 4px 12px color-mix(in srgb, var(--theme-glow) 18%, transparent);
 }
 
 .light .glass-effect-dark {
@@ -185,10 +299,10 @@ body {
 
 /* 内层毛玻璃效果（用于留言内容等） */
 .dark .glass-effect-inner {
-  background: rgba(15, 23, 42, 0.6);
+  background: color-mix(in srgb, var(--tokyo-night-bg-dark) 78%, transparent);
   backdrop-filter: blur(12px) saturate(130%);
   -webkit-backdrop-filter: blur(12px) saturate(130%);
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  border: 1px solid color-mix(in srgb, var(--tokyo-night-blue) 16%, transparent);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
@@ -378,7 +492,7 @@ html {
 
 /* 文字颜色 - 主题切换 */
 .dark .text-theme {
-  color: #c0caf5;
+  color: var(--tokyo-night-fg);
 }
 
 .light .text-theme {
@@ -386,7 +500,7 @@ html {
 }
 
 .dark .text-theme-muted {
-  color: #a9b1d6;
+  color: var(--tokyo-night-fg-dark);
 }
 
 .light .text-theme-muted {
@@ -394,7 +508,7 @@ html {
 }
 
 .dark .text-theme-accent {
-  color: #7aa2f7;
+  color: var(--tokyo-night-blue);
 }
 
 .light .text-theme-accent {
@@ -403,7 +517,7 @@ html {
 
 /* 边框颜色 */
 .dark .border-theme {
-  border-color: rgba(122, 162, 247, 0.3);
+  border-color: color-mix(in srgb, var(--tokyo-night-blue) 35%, transparent);
 }
 
 .light .border-theme {
@@ -436,12 +550,17 @@ html {
 }
 
 .dark .title-reveal {
-  background: linear-gradient(90deg, #7aa2f7, #bb9af7, #7dcfff);
+  background: linear-gradient(
+    90deg,
+    var(--tokyo-night-blue),
+    var(--tokyo-night-magenta),
+    var(--tokyo-night-cyan)
+  );
   background-size: 200% 100%;
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  color: #7aa2f7;
+  color: var(--tokyo-night-blue);
   animation: gradientRevealLTR 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   background-position: 0% center;
 }
@@ -456,12 +575,17 @@ html {
 
 /* 黑夜模式签名渐变显现动画 */
 .dark .signature-reveal {
-  background: linear-gradient(135deg, #7aa2f7 0%, #bb9af7 50%, #7dcfff 100%);
+  background: linear-gradient(
+    135deg,
+    var(--tokyo-night-blue) 0%,
+    var(--tokyo-night-magenta) 50%,
+    var(--tokyo-night-cyan) 100%
+  );
   background-size: 200% 200%;
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  color: #7aa2f7;
+  color: var(--tokyo-night-blue);
   animation: gradientRevealLTR 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards, 
              gradientShift 3s ease infinite;
   animation-delay: 0s, 2.5s;
@@ -543,7 +667,7 @@ html {
 
 /* Select option 样式 */
 .dark .guestbook-input option {
-  background-color: #292e42 !important;
+  background-color: var(--tokyo-night-bg-highlight) !important;
   color: #ffffff !important;
 }
 
@@ -558,7 +682,7 @@ html {
 .dark .guestbook-input:-webkit-autofill:focus,
 .dark .guestbook-input:-webkit-autofill:active {
   -webkit-text-fill-color: #ffffff !important;
-  -webkit-box-shadow: 0 0 0 1000px #292e42 inset !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--tokyo-night-bg-highlight) inset !important;
   transition: background-color 5000s ease-in-out 0s;
   caret-color: #ffffff !important;
 }
@@ -602,7 +726,7 @@ html {
 }
 
 .dark .guestbook-timestamp {
-  color: #a9b1d6 !important;
+  color: var(--tokyo-night-fg-dark) !important;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
 }
 
@@ -638,7 +762,7 @@ html {
 }
 
 .dark .guestbook-extra {
-  color: #a9b1d6 !important;
+  color: var(--tokyo-night-fg-dark) !important;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
 }
 

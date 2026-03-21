@@ -15,11 +15,17 @@
           <p class="text-tokyo-night-fg-dark italic mb-4">
             —— 春風若有憐花意，可否許我再少年？
           </p>
-          <p class="text-tokyo-night-fg-dark italic mb-4">
-            友情链接
-            https://5ime.cn
-            https://taoi.dpdns.org
-          </p>
+          <div class="mb-4">
+            <p class="text-tokyo-night-fg-dark italic mb-2">
+              友情链接
+            </p>
+            <router-link
+              to="/friends"
+              class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm bg-tokyo-night-blue/20 text-tokyo-night-cyan border border-tokyo-night-blue/40 hover:bg-tokyo-night-blue/35 transition-all"
+            >
+              前往友链页面申请/查看
+            </router-link>
+          </div>
           <!-- 严禁修改: 版权信息 -->
           <p class="text-sm text-tokyo-night-dark5">
             DaZiDian & DSMCC ©2007-present All Copyrights Reserved.
@@ -268,23 +274,23 @@ const hideQR = (platform) => {
   width: 3rem;
   height: 3rem;
   border-radius: 0.75rem;
-  background: rgba(122, 162, 247, 0.1);
+  background: color-mix(in srgb, var(--tokyo-night-blue) 12%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(122, 162, 247, 0.2);
+  border: 1px solid color-mix(in srgb, var(--tokyo-night-blue) 24%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #7aa2f7;
+  color: var(--tokyo-night-blue);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .social-icon:hover {
-  background: rgba(122, 162, 247, 0.25);
-  border-color: rgba(125, 207, 255, 0.4);
-  color: #7dcfff;
-  box-shadow: 0 8px 20px rgba(122, 162, 247, 0.3);
+  background: color-mix(in srgb, var(--tokyo-night-blue) 26%, transparent);
+  border-color: color-mix(in srgb, var(--tokyo-night-cyan) 44%, transparent);
+  color: var(--tokyo-night-cyan);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--theme-glow) 32%, transparent);
 }
 
 /* 二维码弹出框 */
@@ -293,13 +299,13 @@ const hideQR = (platform) => {
   bottom: calc(100% + 0.75rem);
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(41, 46, 66, 0.95);
+  background: color-mix(in srgb, var(--tokyo-night-bg-highlight) 90%, transparent);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   padding: 0.5rem;
   border-radius: 0.75rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(122, 162, 247, 0.3);
+  border: 1px solid color-mix(in srgb, var(--tokyo-night-blue) 32%, transparent);
   z-index: 50;
 }
 

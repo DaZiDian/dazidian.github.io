@@ -147,6 +147,7 @@ const navLinks = [
   { name: '个人作品', path: '/works' },
   { name: '文章', path: '/blog' },
   { name: '留言板', path: '/guestbook' },
+  { name: '友链', path: '/friends' },
   { name: '商铺', path: '/shop' },
 ]
 
@@ -221,7 +222,7 @@ onUnmounted(() => {
   height: 2px;  /* 可修改: 下划线高度 */
   bottom: -4px;  /* 可修改: 下划线位置 */
   left: 0;
-  background: linear-gradient(90deg, #7aa2f7, #7dcfff);  /* 可修改: 下划线颜色渐变 */
+  background: linear-gradient(90deg, var(--tokyo-night-blue), var(--tokyo-night-cyan));  /* 可修改: 下划线颜色渐变 */
   transform: scaleX(0);
   transform-origin: center;
   transition: transform 0.3s ease;  /* 可修改: 动画速度 */
@@ -286,8 +287,8 @@ onUnmounted(() => {
 }
 
 .dark .mobile-menu-glass {
-  background: rgba(26, 27, 38, 0.95);
-  border: 1px solid rgba(122, 162, 247, 0.3);
+  background: color-mix(in srgb, var(--tokyo-night-bg) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--tokyo-night-blue) 30%, transparent);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
@@ -299,11 +300,11 @@ onUnmounted(() => {
 
 /* LOGO文字样式 */
 .dark .logo-text {
-  background: linear-gradient(90deg, #7aa2f7, #7dcfff);
+  background: linear-gradient(90deg, var(--tokyo-night-blue), var(--tokyo-night-cyan));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  color: #7aa2f7;
+  color: var(--tokyo-night-blue);
 }
 
 .light .logo-text {
