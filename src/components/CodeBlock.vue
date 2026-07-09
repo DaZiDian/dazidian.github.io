@@ -238,13 +238,9 @@ function updateHighlight() {
   })
 }
 
-// 同步行号和代码的滚动
+// 同步行号和代码的滚动 (已废弃，直接使用原生滚动)
 function syncScroll() {
-  if (codeWrapperRef.value && lineNumbersRef.value) {
-    codeWrapperRef.value.addEventListener('scroll', () => {
-      lineNumbersRef.value.scrollTop = codeWrapperRef.value.scrollTop
-    })
-  }
+  // 不再需要，CSS 已处理滚动同步
 }
 
 // 复制到剪贴板
@@ -429,7 +425,8 @@ onMounted(() => {
 .code-block-content {
   @apply flex relative;
   max-height: 600px;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   align-items: stretch;
   padding-top: 0;
 }
@@ -468,7 +465,9 @@ onMounted(() => {
 }
 
 .code-block-code-wrapper {
-  @apply flex-1 overflow-auto;
+  @apply flex-1;
+  overflow-x: auto;
+  overflow-y: hidden;
   padding-top: 0;
   padding-bottom: 0;
   margin: 0;

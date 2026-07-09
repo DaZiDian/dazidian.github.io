@@ -10,63 +10,64 @@
       </div>
 
       <!-- 文章列表 -->
-      <transition-group 
-        name="list" 
-        tag="div" 
-        class="max-w-4xl mx-auto space-y-6 relative"
+      <transition 
+        name="page-fade" 
+        mode="out-in"
       >
-        <div v-if="isLoading" key="loading" class="text-center py-12 absolute w-full">
-          <p class="transition-colors" :class="isDark ? 'text-gray-400' : 'text-gray-600'">加载中...</p>
-        </div>
-        <article 
-          v-else
-          v-for="(article, index) in paginatedArticles" 
-          :key="article.id || article.slug || index"
-          class="glass-effect rounded-3xl p-6 card-hover"
-        >
-          <div class="flex items-start justify-between gap-4">
-            <div class="flex-1">
-              <!-- 标题 -->
-              <h2 class="blog-article-title text-2xl transition-colors cursor-pointer hover:opacity-80 mb-2">
-                {{ article.title }}
-              </h2>
-              
-              <!-- 发布时间和状态信息 -->
-              <div class="blog-article-meta flex items-center gap-3 flex-wrap">
-                <span>{{ article.date }}</span>
-                <span class="px-2 py-0.5 rounded text-xs font-medium"
-                  :class="isDark 
-                    ? 'bg-tokyo-night-green/20 text-tokyo-night-green' 
-                    : 'bg-green-100 text-green-700'"
-                >
-                  已发布
-                </span>
-                <span class="text-xs opacity-60 hidden sm:inline">slug: {{ article.slug }}</span>
-              </div>
-              
-              <!-- 正文预览 -->
-              <div class="prose prose-sm max-w-none leading-relaxed mb-3">
-                <p v-if="article.content" class="blog-article-content line-clamp-2">{{ article.content }}</p>
-                <p v-else class="blog-article-meta text-xs italic opacity-60">暂无内容预览...</p>
-              </div>
-              
-            </div>
-            
-            <!-- 阅读按钮 -->
-            <div class="flex-shrink-0">
-              <router-link
-                :to="`/blog/${article.slug}`"
-                class="inline-block px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105"
-                :class="isDark 
-                  ? 'bg-tokyo-night-blue text-white hover:bg-tokyo-night-cyan' 
-                  : 'bg-blue-600 text-white hover:bg-blue-700'"
-              >
-                阅读 →
-              </router-link>
-            </div>
+        <div :key="currentPage" class="max-w-4xl mx-auto space-y-6 relative">
+          <div v-if="isLoading" key="loading" class="text-center py-12 absolute w-full">
+            <p class="transition-colors" :class="isDark ? 'text-gray-400' : 'text-gray-600'">加载中...</p>
           </div>
-        </article>
-      </transition-group>
+          <article 
+            v-else
+            v-for="(article, index) in paginatedArticles" 
+            :key="article.id || article.slug || index"
+            class="glass-effect rounded-3xl p-6 card-hover"
+          >
+            <div class="flex items-start justify-between gap-4">
+              <div class="flex-1">
+                <!-- 标题 -->
+                <h2 class="blog-article-title text-2xl transition-colors cursor-pointer hover:opacity-80 mb-2">
+                  {{ article.title }}
+                </h2>
+                
+                <!-- 发布时间和状态信息 -->
+                <div class="blog-article-meta flex items-center gap-3 flex-wrap">
+                  <span>{{ article.date }}</span>
+                  <span class="px-2 py-0.5 rounded text-xs font-medium"
+                    :class="isDark 
+                      ? 'bg-tokyo-night-green/20 text-tokyo-night-green' 
+                      : 'bg-green-100 text-green-700'"
+                  >
+                    已发布
+                  </span>
+                  <span class="text-xs opacity-60 hidden sm:inline">slug: {{ article.slug }}</span>
+                </div>
+                
+                <!-- 正文预览 -->
+                <div class="prose prose-sm max-w-none leading-relaxed mb-3">
+                  <p v-if="article.content" class="blog-article-content line-clamp-2">{{ article.content }}</p>
+                  <p v-else class="blog-article-meta text-xs italic opacity-60">暂无内容预览...</p>
+                </div>
+                
+              </div>
+              
+              <!-- 阅读按钮 -->
+              <div class="flex-shrink-0">
+                <router-link
+                  :to="`/blog/${article.slug}`"
+                  class="inline-block px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105"
+                  :class="isDark 
+                    ? 'bg-tokyo-night-blue text-white hover:bg-tokyo-night-cyan' 
+                    : 'bg-blue-600 text-white hover:bg-blue-700'"
+                >
+                  阅读 →
+                </router-link>
+              </div>
+            </div>
+          </article>
+        </div>
+      </transition>
 
         <!-- 空状态 -->
         <div v-if="!isLoading && articles.length === 0" class="text-center py-20">
@@ -218,23 +219,18 @@ onUnmounted(() => {
   opacity: 0;
 }
 
-/* 列表过渡动画 */
-.list-enter-active,
-.list-leave-active {
-  transition: all 0.5s ease;
+/* 翻页过渡动画 */
+.page-fade-enter-active,
+.page-fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
-.list-enter-from {
+.page-fade-enter-from {
   opacity: 0;
-  transform: translateY(30px);
+  transform: translateY(15px);
 }
-.list-leave-to {
+.page-fade-leave-to {
   opacity: 0;
-  transform: translateY(-30px);
-}
-/* 离开时的元素设为绝对定位，以便兄弟元素平滑移动 */
-.list-leave-active {
-  position: absolute;
-  width: 100%;
+  transform: translateY(-15px);
 }
 </style>
 
