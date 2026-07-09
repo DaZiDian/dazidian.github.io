@@ -347,7 +347,7 @@
              >
                <div>
                  <h3 class="font-bold text-lg mb-2 line-clamp-1 group-hover:text-tokyo-night-cyan transition-colors" :class="isDark ? 'text-white' : 'text-gray-800'">{{ post.title }}</h3>
-                 <p class="text-sm line-clamp-2 mb-3 opacity-80 transition-colors" :class="isDark ? 'text-gray-300' : 'text-gray-600'">{{ post.content ? post.content.replace(/[#*`~>-]/g, '').substring(0, 100) + '...' : '暂无预览' }}</p>
+                 <p class="text-sm line-clamp-2 mb-3 opacity-80 transition-colors" :class="isDark ? 'text-gray-300' : 'text-gray-600'">{{ post.preview }}</p>
                </div>
                <div class="flex items-center justify-between text-xs opacity-70 transition-colors" :class="isDark ? 'text-gray-400' : 'text-gray-500'">
                  <span>📅 {{ formatDate(post.created_at || post.updated_at) }}</span>
@@ -403,6 +403,19 @@ const fetchRecentPosts = async () => {
       recentPosts.value = response.data.data
         .filter(post => post.status === 'published')
         .sort((a, b) => new Date(b.updated_at || b.created_at || 0) - new Date(a.updated_at || a.created_at || 0))
+        .map(post => {
+          let preview = '暂无预览';
+          if (post.content) {
+            // 获取第一行非空文本作为预览
+            const lines = post.content.split('\n')
+              .map(line => line.replace(/<[^>]+>/g, '').replace(/[#*`~>-]/g, '').trim())
+              .filter(line => line.length > 0);
+            if (lines.length > 0) {
+              preview = lines[0];
+            }
+          }
+          return { ...post, preview };
+        })
         .slice(0, 3)
     }
   } catch (error) {

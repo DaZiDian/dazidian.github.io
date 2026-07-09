@@ -122,7 +122,7 @@ export default async function handler(req, res) {
       } else {
         // 获取所有文章
         const result = await sql`
-          SELECT id, slug, title, tags, status, created_at, updated_at
+          SELECT id, slug, title, content, tags, status, created_at, updated_at
           FROM blog_posts 
           ORDER BY updated_at DESC
         `;
