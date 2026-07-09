@@ -1,0 +1,773 @@
+/* 导入字体 - 必须放在最前面 */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'JetBrains Mono', 'STZhongsong', '华文中宋', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* 黑夜模式默认白色字体 */
+.dark {
+  color: #ffffff;
+}
+
+.light {
+  color: #1f2937;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Markdown 代码块样式 - 黑色背景 */
+/* 注意：代码块现在由 CodeBlock 组件处理，这些样式用于向后兼容 */
+.prose pre:not([data-code-block]) {
+  @apply rounded-lg p-4 overflow-x-auto my-4;
+  background-color: #0d1117 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #c9d1d9;
+}
+
+.prose pre:not([data-code-block]) code {
+  @apply p-0 bg-transparent;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: inherit;
+  display: block;
+  font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+.prose code.hljs {
+  @apply bg-transparent;
+  background: transparent !important;
+}
+
+/* 行内代码样式 */
+.prose :not(pre) > code {
+  @apply px-1.5 py-0.5 rounded;
+  background-color: rgba(110, 118, 129, 0.4);
+  font-size: 0.875em;
+  color: inherit;
+  font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+}
+
+/* 暗色模式下的代码块 */
+.dark .prose pre:not([data-code-block]) {
+  background-color: #0d1117 !important;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #c9d1d9;
+}
+
+/* 亮色模式下的代码块 */
+.light .prose pre:not([data-code-block]) {
+  background-color: #0d1117 !important; /* 代码块统一使用黑色背景 */
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #c9d1d9;
+}
+
+.light .prose :not(pre) > code {
+  background-color: rgba(175, 184, 193, 0.2);
+}
+
+/* Tokyo Night 配色主题 */
+:root {
+  --tokyo-night-bg: #1a1b26;
+  --tokyo-night-bg-dark: #16161e;
+  --tokyo-night-bg-highlight: #292e42;
+  --tokyo-night-terminal-black: #414868;
+  --tokyo-night-fg: #c0caf5;
+  --tokyo-night-fg-dark: #a9b1d6;
+  --tokyo-night-fg-gutter: #3b4261;
+  --tokyo-night-dark3: #545c7e;
+  --tokyo-night-comment: #565f89;
+  --tokyo-night-dark5: #737aa2;
+  --tokyo-night-blue0: #3d59a1;
+  --tokyo-night-blue: #7aa2f7;
+  --tokyo-night-cyan: #7dcfff;
+  --tokyo-night-blue1: #2ac3de;
+  --tokyo-night-blue2: #0db9d7;
+  --tokyo-night-blue5: #89ddff;
+  --tokyo-night-blue6: #b4f9f8;
+  --tokyo-night-blue7: #394b70;
+  --tokyo-night-magenta: #bb9af7;
+  --tokyo-night-magenta2: #ff007c;
+  --tokyo-night-purple: #9d7cd8;
+  --tokyo-night-orange: #ff9e64;
+  --tokyo-night-yellow: #e0af68;
+  --tokyo-night-green: #9ece6a;
+  --tokyo-night-green1: #73daca;
+  --tokyo-night-green2: #41a6b5;
+  --tokyo-night-teal: #1abc9c;
+  --tokyo-night-red: #f7768e;
+  --tokyo-night-red1: #db4b4b;
+  --theme-glow: #7dcfff;
+  --light-bg-base: #f8fbff;
+  --light-bg-start: #f8fbff;
+  --light-bg-mid: #eef4ff;
+  --light-bg-end: #fdfdff;
+  --light-bg-glow1: rgba(59, 130, 246, 0.14);
+  --light-bg-glow2: rgba(14, 165, 233, 0.12);
+  --light-bg-pattern: rgba(59, 130, 246, 0.06);
+  --light-bg-pattern-soft: rgba(59, 130, 246, 0.04);
+}
+
+/* 主题背景 */
+.tokyo-night-bg {
+  background:
+    radial-gradient(
+      circle at 18% -5%,
+      color-mix(in srgb, var(--theme-glow) 24%, transparent),
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at 85% 0%,
+      color-mix(in srgb, var(--tokyo-night-magenta) 18%, transparent),
+      transparent 30%
+    ),
+    linear-gradient(
+      135deg,
+      var(--tokyo-night-bg) 0%,
+      var(--tokyo-night-bg-dark) 52%,
+      var(--tokyo-night-bg) 100%
+    );
+  background-attachment: fixed;
+}
+
+.light-bg {
+  background-color: var(--light-bg-base);
+  background-image:
+    radial-gradient(circle at 22% 12%, var(--light-bg-glow1), transparent 34%),
+    radial-gradient(circle at 88% 2%, var(--light-bg-glow2), transparent 30%),
+    linear-gradient(135deg, var(--light-bg-start) 0%, var(--light-bg-mid) 50%, var(--light-bg-end) 100%),
+    repeating-linear-gradient(
+      35deg,
+      var(--light-bg-pattern) 0 1px,
+      transparent 1px 24px
+    ),
+    repeating-linear-gradient(
+      -35deg,
+      var(--light-bg-pattern-soft) 0 1px,
+      transparent 1px 30px
+    );
+  background-attachment: fixed;
+}
+
+/* 动态覆盖 Tailwind 主题色（用于黑夜预设调色盘） */
+.dark .bg-tokyo-night-bg {
+  background-color: var(--tokyo-night-bg) !important;
+}
+
+.dark .bg-tokyo-night-bg-highlight {
+  background-color: var(--tokyo-night-bg-highlight) !important;
+}
+
+.dark .bg-tokyo-night-blue {
+  background-color: var(--tokyo-night-blue) !important;
+}
+
+.dark .bg-tokyo-night-blue\/20 {
+  background-color: color-mix(in srgb, var(--tokyo-night-blue) 20%, transparent) !important;
+}
+
+.dark .bg-tokyo-night-green\/20 {
+  background-color: color-mix(in srgb, var(--tokyo-night-green) 20%, transparent) !important;
+}
+
+.dark .hover\:bg-tokyo-night-blue:hover {
+  background-color: var(--tokyo-night-blue) !important;
+}
+
+.dark .hover\:bg-tokyo-night-blue0:hover {
+  background-color: var(--tokyo-night-blue0) !important;
+}
+
+.dark .text-tokyo-night-fg {
+  color: var(--tokyo-night-fg) !important;
+}
+
+.dark .text-tokyo-night-fg-dark {
+  color: var(--tokyo-night-fg-dark) !important;
+}
+
+.dark .text-tokyo-night-cyan {
+  color: var(--tokyo-night-cyan) !important;
+}
+
+.dark .text-tokyo-night-blue {
+  color: var(--tokyo-night-blue) !important;
+}
+
+.dark .text-tokyo-night-magenta {
+  color: var(--tokyo-night-magenta) !important;
+}
+
+.dark .text-tokyo-night-green {
+  color: var(--tokyo-night-green) !important;
+}
+
+.dark .border-tokyo-night-blue {
+  border-color: var(--tokyo-night-blue) !important;
+}
+
+.dark .border-tokyo-night-blue\/30 {
+  border-color: color-mix(in srgb, var(--tokyo-night-blue) 32%, transparent) !important;
+}
+
+.dark .border-tokyo-night-blue\/40 {
+  border-color: color-mix(in srgb, var(--tokyo-night-blue) 44%, transparent) !important;
+}
+
+.dark .border-tokyo-night-bg-highlight {
+  border-color: color-mix(in srgb, var(--tokyo-night-blue) 20%, transparent) !important;
+}
+
+/* 主题切换过渡 */
+.theme-transition {
+  transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-transition * {
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* 毛玻璃效果 - 增强版本，确保内容清晰可见 */
+.dark .glass-effect {
+  background: color-mix(in srgb, var(--tokyo-night-bg-highlight) 75%, transparent);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--tokyo-night-blue) 30%, transparent);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    0 4px 12px color-mix(in srgb, var(--theme-glow) 20%, transparent);
+  color: #fff;
+}
+
+.light .glass-effect {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(37, 99, 235, 0.08);
+  color: #1f2937;
+}
+
+/* 深色毛玻璃效果 */
+.dark .glass-effect-dark {
+  background: color-mix(in srgb, var(--tokyo-night-bg-dark) 85%, transparent);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid color-mix(in srgb, var(--tokyo-night-blue) 22%, transparent);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    0 4px 12px color-mix(in srgb, var(--theme-glow) 18%, transparent);
+}
+
+.light .glass-effect-dark {
+  background: rgba(248, 249, 250, 0.9);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 1px solid rgba(37, 99, 235, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(37, 99, 235, 0.1);
+}
+
+/* 内层毛玻璃效果（用于留言内容等） */
+.dark .glass-effect-inner {
+  background: color-mix(in srgb, var(--tokyo-night-bg-dark) 78%, transparent);
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
+  border: 1px solid color-mix(in srgb, var(--tokyo-night-blue) 16%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.light .glass-effect-inner {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 链接下划线动画 - Tokyo Night 配色 */
+.link-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.link-underline::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background: linear-gradient(90deg, var(--tokyo-night-blue), var(--tokyo-night-cyan));
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.3s ease;
+}
+
+.link-underline:hover::after {
+  transform: scaleX(1);
+}
+
+.link-underline.active::after {
+  animation: pulseLine 1.5s ease-in-out infinite;
+  transform: scaleX(1);
+}
+
+@keyframes pulseLine {
+  0%, 100% {
+    transform: scaleX(0.8);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+/* 卡片悬浮效果 */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* 页面过渡动画 */
+.page-transition-enter-active,
+.page-transition-leave-active {
+  transition: all 0.3s ease;
+}
+
+.page-transition-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-transition-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+/* 加载进度条 */
+.loading-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+  z-index: 9999;
+  transform-origin: left;
+}
+
+/* 背景渐变 */
+.gradient-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-bg-2 {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.gradient-bg-3 {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* 淡入动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+/* 缩放进入动画 */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* 旋转动画 */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-rotate {
+  animation: rotate 2s linear infinite;
+}
+
+/* 滑入动画 */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-down {
+  animation: slideDown 0.4s ease-out forwards;
+}
+
+/* 渐变文字 */
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 悬浮提升效果 */
+.hover-lift {
+  transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* 平滑滚动 */
+html {
+  scroll-behavior: smooth;
+}
+
+/* 文字颜色 - 主题切换 */
+.dark .text-theme {
+  color: var(--tokyo-night-fg);
+}
+
+.light .text-theme {
+  color: #1f2937;
+}
+
+.dark .text-theme-muted {
+  color: var(--tokyo-night-fg-dark);
+}
+
+.light .text-theme-muted {
+  color: #6b7280;
+}
+
+.dark .text-theme-accent {
+  color: var(--tokyo-night-blue);
+}
+
+.light .text-theme-accent {
+  color: #2563eb;
+}
+
+/* 边框颜色 */
+.dark .border-theme {
+  border-color: color-mix(in srgb, var(--tokyo-night-blue) 35%, transparent);
+}
+
+.light .border-theme {
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+/* 滚动动画 - 上浮效果 */
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-animate.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 黑夜模式标题渐变显现动画 - 从左向右 */
+@keyframes gradientRevealLTR {
+  0% {
+    background-position: -200% center;
+    opacity: 0;
+  }
+  100% {
+    background-position: 0% center;
+    opacity: 1;
+  }
+}
+
+.dark .title-reveal {
+  background: linear-gradient(
+    90deg,
+    var(--tokyo-night-blue),
+    var(--tokyo-night-magenta),
+    var(--tokyo-night-cyan)
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--tokyo-night-blue);
+  animation: gradientRevealLTR 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  background-position: 0% center;
+}
+
+.light .title-reveal {
+  background: linear-gradient(90deg, #2563eb, #3b82f6);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #2563eb;
+}
+
+/* 黑夜模式签名渐变显现动画 */
+.dark .signature-reveal {
+  background: linear-gradient(
+    135deg,
+    var(--tokyo-night-blue) 0%,
+    var(--tokyo-night-magenta) 50%,
+    var(--tokyo-night-cyan) 100%
+  );
+  background-size: 200% 200%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--tokyo-night-blue);
+  animation: gradientRevealLTR 2.5s cubic-bezier(0.4, 0, 0.2, 1) forwards, 
+             gradientShift 3s ease infinite;
+  animation-delay: 0s, 2.5s;
+  background-position: 0% 50%;
+}
+
+.light .signature-reveal {
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 50%, #06b6d4 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #2563eb;
+}
+
+/* 渐变循环动画 - 用于签名 */
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* 延迟动画 - 用于交错效果 */
+.scroll-animate-delay-1 {
+  transition-delay: 0.1s;
+}
+
+.scroll-animate-delay-2 {
+  transition-delay: 0.2s;
+}
+
+.scroll-animate-delay-3 {
+  transition-delay: 0.3s;
+}
+
+.scroll-animate-delay-4 {
+  transition-delay: 0.4s;
+}
+
+.scroll-animate-delay-5 {
+  transition-delay: 0.5s;
+}
+
+.scroll-animate-delay-6 {
+  transition-delay: 0.6s;
+}
+
+/* 留言板输入框专用样式 - 全局强制 */
+.guestbook-input {
+  color: inherit;
+}
+
+.dark .guestbook-input,
+.dark .guestbook-input:focus,
+.dark .guestbook-input:active {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+.light .guestbook-input,
+.light .guestbook-input:focus,
+.light .guestbook-input:active {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+}
+
+/* Placeholder 样式 */
+.dark .guestbook-input::placeholder {
+  color: rgba(156, 163, 175, 0.8) !important;
+  -webkit-text-fill-color: rgba(156, 163, 175, 0.8) !important;
+}
+
+.light .guestbook-input::placeholder {
+  color: rgba(107, 114, 128, 0.8) !important;
+  -webkit-text-fill-color: rgba(107, 114, 128, 0.8) !important;
+}
+
+/* Select option 样式 */
+.dark .guestbook-input option {
+  background-color: var(--tokyo-night-bg-highlight) !important;
+  color: #ffffff !important;
+}
+
+.light .guestbook-input option {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+/* 浏览器自动填充样式 */
+.dark .guestbook-input:-webkit-autofill,
+.dark .guestbook-input:-webkit-autofill:hover,
+.dark .guestbook-input:-webkit-autofill:focus,
+.dark .guestbook-input:-webkit-autofill:active {
+  -webkit-text-fill-color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--tokyo-night-bg-highlight) inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: #ffffff !important;
+}
+
+.light .guestbook-input:-webkit-autofill,
+.light .guestbook-input:-webkit-autofill:hover,
+.light .guestbook-input:-webkit-autofill:focus,
+.light .guestbook-input:-webkit-autofill:active {
+  -webkit-text-fill-color: #111827 !important;
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: #111827 !important;
+}
+
+/* 响应式隐藏 */
+@media (max-width: 768px) {
+  .hide-mobile {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .show-mobile {
+    display: none;
+  }
+}
+
+/* 文本截断工具类 */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dark .guestbook-timestamp {
+  color: var(--tokyo-night-fg-dark) !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+.light .guestbook-timestamp {
+  color: #64748b !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6) !important;
+}
+
+/* 留言板内容 - 强制可见 */
+.guestbook-content {
+  font-size: 0.875rem !important;
+  line-height: 1.7 !important;
+  margin-top: 0.5rem !important;
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+}
+
+.dark .guestbook-content {
+  color: #e2e8f0 !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+.light .guestbook-content {
+  color: #334155 !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6) !important;
+}
+
+/* 留言板额外信息 - 强制可见 */
+.guestbook-extra {
+  font-size: 0.75rem !important;
+  line-height: 1.5 !important;
+  margin-top: 0.5rem !important;
+}
+
+.dark .guestbook-extra {
+  color: var(--tokyo-night-fg-dark) !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+.light .guestbook-extra {
+  color: #64748b !important;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6) !important;
+}
+

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Spotify Authorization</title>
+</head>
+<body>
+<script>
+(() => {
+  const params = new URLSearchParams(location.search);
+  const code = params.get('code');
+  const error = params.get('error');
+
+  // 1️⃣ 首选：popup + opener
+  if (window.opener && !window.opener.closed) {
+    try {
+      window.opener.postMessage({
+        type: 'SPOTIFY_AUTH_CALLBACK',
+        code,
+        error
+      }, '*');
+      window.close();
+      return;
+    } catch (e) {
+      // 安全策略阻断，继续 fallback
+    }
+  }
+
+  // 2️⃣ Fallback：storage 通道（关键）
+  if (code) {
+    sessionStorage.setItem('SPOTIFY_AUTH_CODE', code);
+    document.body.innerText =
+      '授权完成，请返回原页面（可以关闭此窗口）';
+  } else {
+    document.body.innerText = '授权失败';
+  }
+})();
+</script>
+</body>
+</html>
