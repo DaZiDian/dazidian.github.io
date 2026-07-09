@@ -1,7 +1,7 @@
 {
   "name": "z1d1anweb",
   "private": true,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "description": "DaZiDian的个人网站 - 使用Vue3和Vite构建的现代化个人网站",
   "author": "DaZiDian <dz1d07@outlook.com>",
