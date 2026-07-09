@@ -74,7 +74,6 @@
           <p class="text-xl transition-colors" :class="isDark ? 'text-tokyo-night-fg' : 'text-gray-800'">暂无文章</p>
           <p class="transition-colors mt-2" :class="isDark ? 'text-tokyo-night-fg-dark' : 'text-gray-600'">敬请期待...</p>
         </div>
-      </div>
 
       <!-- 分页 -->
       <div v-if="articles.length > 0" class="mt-12 flex justify-center gap-2">
