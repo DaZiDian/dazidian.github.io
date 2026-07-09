@@ -1,5 +1,5 @@
 <template>
-  <div class="code-block-wrapper" :class="isDark ? 'dark' : 'light'">
+  <div class="code-block-wrapper not-prose" :class="isDark ? 'dark' : 'light'">
     <!-- 工具栏 -->
     <div class="code-block-header">
       <!-- 左上角：语言选择器或语言显示 -->
@@ -481,10 +481,10 @@ onMounted(() => {
   font-size: 0.8125rem;
   line-height: 1.5;
   color: #c9d1d9;
-  padding: 0.75rem 1rem;
-  margin: 0;
-  border: none;
-  border-radius: 0;
+  padding: 0.75rem 1rem !important;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
 }
 
 .code-block-pre code {
@@ -495,8 +495,8 @@ onMounted(() => {
   font-size: inherit;
   line-height: 1.5 !important;
   color: inherit;
-  border: none;
-  border-radius: 0;
+  border: none !important;
+  border-radius: 0 !important;
 }
 
 /* 确保代码正常显示 */

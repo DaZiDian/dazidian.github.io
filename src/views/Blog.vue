@@ -10,13 +10,17 @@
       </div>
 
       <!-- 文章列表 -->
-      <div class="max-w-4xl mx-auto space-y-6">
-        <div v-if="isLoading" class="text-center py-12">
+      <transition-group 
+        name="list" 
+        tag="div" 
+        class="max-w-4xl mx-auto space-y-6 relative"
+      >
+        <div v-if="isLoading" key="loading" class="text-center py-12 absolute w-full">
           <p class="transition-colors" :class="isDark ? 'text-gray-400' : 'text-gray-600'">加载中...</p>
         </div>
         <article 
           v-else
-          v-for="(article, index) in articles" 
+          v-for="(article, index) in paginatedArticles" 
           :key="article.id || article.slug || index"
           class="glass-effect rounded-3xl p-6 card-hover"
         >
@@ -62,6 +66,7 @@
             </div>
           </div>
         </article>
+      </transition-group>
 
         <!-- 空状态 -->
         <div v-if="!isLoading && articles.length === 0" class="text-center py-20">
@@ -88,7 +93,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useScrollAnimation } from '../composables/useScrollAnimation'
 import { useTheme } from '../composables/useTheme'
 import axios from 'axios'
@@ -102,8 +107,17 @@ const currentPage = ref(1)
 const totalPages = ref(1)
 const isLoading = ref(false)
 
+const ITEMS_PER_PAGE = 10;
+
 // 文章数据
 const articles = ref([])
+
+// 计算当前页展示的文章
+const paginatedArticles = computed(() => {
+  const start = (currentPage.value - 1) * ITEMS_PER_PAGE;
+  const end = start + ITEMS_PER_PAGE;
+  return articles.value.slice(start, end);
+})
 
 
 // 从API加载文章
@@ -156,7 +170,7 @@ const fetchArticles = async () => {
       console.log(`最终显示的文章数量: ${articles.value.length}`, articles.value)
       
       // 计算分页
-      totalPages.value = Math.ceil(articles.value.length / 10) || 1
+      totalPages.value = Math.ceil(articles.value.length / ITEMS_PER_PAGE) || 1
     } else {
       console.warn('API返回数据格式错误或为空')
       articles.value = []
@@ -203,6 +217,25 @@ onUnmounted(() => {
 .animate-fade-in {
   animation: fadeIn 0.6s ease-out forwards;
   opacity: 0;
+}
+
+/* 列表过渡动画 */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from {
+  opacity: 0;
+  transform: translateY(30px);
+}
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(-30px);
+}
+/* 离开时的元素设为绝对定位，以便兄弟元素平滑移动 */
+.list-leave-active {
+  position: absolute;
+  width: 100%;
 }
 </style>
 
