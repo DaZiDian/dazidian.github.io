@@ -269,10 +269,10 @@
           <div class="flex flex-col items-center gap-6">
             <div class="flex flex-col lg:flex-row gap-6 w-full justify-center items-center">
               <a href="https://github.com/anuraghazra/github-readme-stats" class="hover:scale-105 transition-transform" target="_blank">
-                <img height="190" alt="DaZiDian's GitHub stats" src="https://github-readme-stats-sigma-five.vercel.app/api?username=DaZiDian&count_private=true&locale=cn&theme=tokyonight&show_icons=true" class="rounded-xl shadow-lg" />
+                <img height="190" alt="DaZiDian's GitHub stats" src="https://github-readme-stats-lac-sigma-77.vercel.app/api?username=DaZiDian&count_private=true&locale=cn&theme=tokyonight&show_icons=true" class="rounded-xl shadow-lg" />
               </a>
               <a href="https://github.com/anuraghazra/github-readme-stats" class="hover:scale-105 transition-transform" target="_blank">
-                <img height="190" alt="DaZiDian's top languages" src="https://github-readme-stats-sigma-five.vercel.app/api/top-langs/?username=DaZiDian&count_private=true&locale=cn&layout=compact&theme=tokyonight" class="rounded-xl shadow-lg" />
+                <img height="190" alt="DaZiDian's top languages" src="https://github-readme-stats-lac-sigma-77.vercel.app/api/top-langs/?username=DaZiDian&count_private=true&locale=cn&layout=compact&theme=tokyonight" class="rounded-xl shadow-lg" />
               </a>
             </div>
             
@@ -280,9 +280,6 @@
               <img alt="DaZiDian's GitHub streak" src="https://streak-stats.demolab.com?user=DaZiDian&theme=tokyonight&hide_border=true&background=00000000" class="max-w-full" />
             </div>
             
-            <div class="w-full flex justify-center hover:scale-[1.02] transition-transform">
-              <img alt="DaZiDian's GitHub trophies" src="https://github-profile-trophy.vercel.app/?username=DaZiDian&theme=algolia&no-frame=true&no-bg=true&margin-w=8&row=1&column=6" class="max-w-full" />
-            </div>
           </div>
         </div>
       </section>
