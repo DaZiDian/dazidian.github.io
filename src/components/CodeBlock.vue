@@ -322,6 +322,8 @@ onMounted(() => {
 <style scoped>
 .code-block-wrapper {
   @apply overflow-hidden my-4;
+  /* 行号与代码必须共用同一个整数行高，避免 19.5px 这类小数在部分浏览器/缩放下被分别取整后逐行错位 */
+  --code-line-height: 20px;
   background-color: #0d1117;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.5rem;
@@ -437,7 +439,7 @@ onMounted(() => {
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   min-width: 50px;
   user-select: none;
-  line-height: 1.5;
+  line-height: var(--code-line-height);
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
   flex-shrink: 0;
@@ -446,8 +448,9 @@ onMounted(() => {
 .code-block-line-numbers .line-number {
   font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
   font-size: 0.8125rem;
-  line-height: 1.5;
-  height: calc(0.8125rem * 1.5);
+  line-height: var(--code-line-height);
+  height: var(--code-line-height);
+  flex-shrink: 0;
   display: block;
   text-align: right;
   margin: 0;
@@ -478,7 +481,7 @@ onMounted(() => {
   background-color: transparent;
   font-family: 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
   font-size: 0.8125rem;
-  line-height: 1.5;
+  line-height: var(--code-line-height);
   color: #c9d1d9;
   padding: 0.75rem 1rem !important;
   margin: 0 !important;
@@ -494,7 +497,7 @@ onMounted(() => {
   padding: 0;
   margin: 0;
   font-size: inherit;
-  line-height: 1.5 !important;
+  line-height: var(--code-line-height) !important;
   color: inherit;
   border: none !important;
   border-radius: 0 !important;
@@ -505,14 +508,14 @@ onMounted(() => {
 /* 确保代码正常显示 */
 .code-block-pre code :deep(*) {
   display: inline;
-  line-height: 1.5 !important;
+  line-height: var(--code-line-height) !important;
   margin: 0;
   padding: 0;
 }
 
 /* 确保代码行与行号对齐 */
 .code-block-pre code :deep(br) {
-  line-height: 1.5;
+  line-height: var(--code-line-height);
 }
 
 /* 自定义滚动条 */
