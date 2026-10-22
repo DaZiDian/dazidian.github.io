@@ -484,6 +484,8 @@ onMounted(() => {
   margin: 0 !important;
   border: none !important;
   border-radius: 0 !important;
+  /* 横向滚动统一由 .code-block-code-wrapper 负责，避免出现嵌套滚动条 */
+  overflow: visible !important;
 }
 
 .code-block-pre code {
@@ -496,6 +498,8 @@ onMounted(() => {
   color: inherit;
   border: none !important;
   border-radius: 0 !important;
+  /* highlight.js 默认给 pre code 设置了 overflow-x:auto，会截断长行并吞掉外层滚动条 */
+  overflow: visible !important;
 }
 
 /* 确保代码正常显示 */
